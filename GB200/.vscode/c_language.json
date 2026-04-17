@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "name": "MinGW-UCRT-PowerShell",
+      "includePath": [
+        "${workspaceFolder}/**"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "compilerPath": "C:/Strawberry/c/bin/g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-gcc-x64",
+      "compilerArgs": [
+        "-fopenmp"
+      ]
+    }
+  ],
+  "version": 4
+}

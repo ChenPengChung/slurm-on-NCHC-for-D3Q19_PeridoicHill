@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"C:\\\\Users\\\\88697.CHENPENGCHUNG12\\\\Desktop\\\\Re100_benchmark\\\\Edit11_GILBM_GTSFrolichWENO7\" -type f \\\\\\( -name \"*.h\" -o -name \"*.cu\" \\\\\\) -exec grep -l \"f_post_read\\\\|f_post_write\" {} \\\\;)",
+      "Bash(python /tmp/verify_lagrange.py)",
+      "Read(//tmp/**)",
+      "Bash(g++ -O2 -o test_wall test_wall_gradient_order.cpp -lm)",
+      "Bash(./test_wall)",
+      "Bash(g++ -O2 -o test_ghost test_ghost_extrapolation_order.cpp -lm)",
+      "Bash(./test_ghost)",
+      "Bash(wc -l *.h *.cu)",
+      "Bash(chmod +x dry_run_chain_test.sh)",
+      "Bash(bash dry_run_chain_test.sh help)",
+      "Bash(grep -Hn '1.732050807568877' *.h *.cu)",
+      "Bash(grep -Hn \"^#define\\\\s*jp\\\\|^const.*jp\\\\s*=\\\\|^int\\\\s*jp\\\\s*=\" /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/variables.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h)",
+      "Bash(grep -rn -E '\\\\[VTK\\\\].*Rolling|kept newest.*vtk|vtk.*kept' /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -rn \"Rolling retention\" /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -rn \"\\\\[VTK\\\\]\" /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -rn \"velocity_merged.*purge\\\\|VTK_KEEP\\\\|velocity_merged.*rm\\\\|vtk.*rm\\\\|rm.*velocity\" /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -n \"g_force_integral\\\\|g_error_prev\\\\|g_ctrl_initialized\\\\|g_gehrke_activated\" /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(bash -n /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/build_and_submit.sh)",
+      "Bash(awk '{printf \"  %-30s %s %s\\\\n\", $NF, $6, $7}')",
+      "Bash(bash -n build_and_submit.sh)",
+      "Bash(grep -rn 'SIMPLE-PROP\\\\|SIMPLE_PROP' /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -v '//')",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(gh pr:*)",
+      "Bash(grep -rn '\\\\bisnan\\\\b\\\\|\\\\bisinf\\\\b' /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/*.h /c/Users/88697.CHENPENGCHUNG12/Desktop/Re100_benchmark/Edit11_GILBM_GTSFrolichWENO7/main.cu)",
+      "Bash(grep -v 'std::isnan\\\\|std::isinf\\\\|//.*isnan\\\\|//.*isinf')",
+      "Bash(ssh s8313697@t3-still-lgn01.twcc.ai \"sacctmgr show qos format=Name,MaxSubmitJobsPerUser,MaxJobsPerUser -n 2>/dev/null || scontrol show config 2>/dev/null | grep -i 'maxjob\\\\|maxsubmit'\")",
+      "WebSearch"
+    ]
+  }
+}

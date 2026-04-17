@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cfdlab.vpn-route-watcher</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>while true; do ppp="$(ifconfig 2>/dev/null | grep -o '^ppp[0-9]*' | head -1)"; if [ -n "$ppp" ]; then iface="$(route -n get 140.114.58.87 2>/dev/null | awk '/interface:/{print $2}')"; case "$iface" in ppp*) ;; *) route add -net 140.114.58.0/24 -interface "$ppp" 2>/dev/null ;; esac; fi; sleep 5; done</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/vpn-route-watcher.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/vpn-route-watcher.log</string>
+</dict>
+</plist>

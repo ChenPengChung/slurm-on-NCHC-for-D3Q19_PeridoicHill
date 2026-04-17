@@ -1,0 +1,49 @@
+[2026-02-19 04:16:17] pull daemon started target=89 interval=30s
+[AUTOPULL] 89: 160 changes
+[90mremote: Enumerating objects...[0m
+[90mremote: Enumerating objects: 160, done.[0m
+[90mremote: Computing line changes: done.[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 2/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 3/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[90mDownloading objects: 100% (160/160), done.[0m
+/Users/yetianzhong/Desktop/4.GitHub/D3Q27_PeriodicHill/.vscode/Zsh_mainsystem.sh: line 192: formatted_lines[@]: unbound variable
+[2026-02-19 05:00:13] pull daemon started target=87 interval=30s
+[AUTOPULL] 87: 163 changes
+[90mremote: Enumerating objects...[0m
+[90mremote: Enumerating objects: 163, done.[0m
+[90mremote: Computing line changes: done.[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 2/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 3/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[90mDownloading objects: 100% (163/163), done.[0m
+/Users/yetianzhong/Desktop/4.GitHub/D3Q27_PeriodicHill/.vscode/Zsh_mainsystem.sh: line 192: formatted_lines[@]: unbound variable
+[2026-02-19 11:35:07] pull daemon started target=87 interval=30s
+ssh: connect to host 140.114.58.87 port 22: Operation timed out
+rsync: connection unexpectedly closed (0 bytes received so far) [receiver]
+rsync error: unexplained error (code 255) at /AppleInternal/Library/BuildRoots/c86b39fc-bee9-11ef-82d4-d285688f7a47/Library/Caches/com.apple.xbs/Sources/rsync/rsync/io.c(453) [receiver=2.6.9]
+[AUTOPULL] 87: preview failed
+[AUTOPULL] 87: 167 changes
+[90mremote: Enumerating objects...[0m
+[90mremote: Enumerating objects: 167, done.[0m
+[90mremote: Computing line changes: done.[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 2/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[31m⚠ Retry 3/3 (waiting 3s...)[0m
+
+[31m⚠ rsync exited with code 1[0m
+[90mDownloading objects: 100% (167/167), done.[0m
+/Users/yetianzhong/Desktop/4.GitHub/D3Q27_PeriodicHill/.vscode/Zsh_mainsystem.sh: line 192: formatted_lines[@]: unbound variable

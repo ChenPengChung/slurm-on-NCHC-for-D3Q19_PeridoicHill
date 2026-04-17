@@ -1,0 +1,70 @@
+[
+    { "key": "alt+6", "command": "workbench.action.terminal.sendSequence", "args": { "text": "cd ~/Reference7_FluidX3D && rm -f temp/*.o && make Linux\n" }, "when": "terminalFocus" },
+    { "key": "alt+7", "command": "workbench.action.terminal.sendSequence", "args": { "text": "bash ~/Reference7_FluidX3D/run_gpu.sh 4\n" }, "when": "terminalFocus" },
+    { "key": "alt+9", "command": "workbench.action.terminal.sendSequence", "args": { "text": "bash ~/Reference7_FluidX3D/run_gpu.sh 8\n" }, "when": "terminalFocus" },
+    { "key": "alt+5", "command": "workbench.action.terminal.sendSequence", "args": { "text": "nvcc main.cu -arch=sm_60 --ptxas-options=-v -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out 2>&1 | grep -iE 'spill|registers|cmem|error|warning'\n" } },
+    { "key": "alt+2", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=2; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "alt+4", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=4; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "alt+8", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=8; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "ctrl+shift+b", "command": "workbench.action.terminal.sendSequence", "args": { "text": "nvcc main.cu -arch=sm_60 -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out && { N=4; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }; }\n" } },
+    { "key": "ctrl+shift+5", "command": "workbench.action.terminal.sendSequence", "args": { "text": "/usr/local/cuda/bin/nvcc -O2 -arch=sm_60 --ptxas-options=-v main.cu -I/opt/openmpi-3.1.4/include -L/opt/openmpi-3.1.4/lib -lmpi -o a.out 2>&1 | grep -iE 'spill|registers|cmem|error|warning'\n" } },
+    { "key": "ctrl+shift+4", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=4; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup /opt/openmpi-3.1.4/bin/mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "ctrl+shift+8", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=8; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup /opt/openmpi-3.1.4/bin/mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "alt+f", "command": "workbench.action.terminal.sendSequence", "args": { "text": "python3 result/5.SL_python.py\n" } },
+    { "key": "alt+t", "command": "workbench.action.terminal.sendSequence", "args": { "text": "python3 result/4.Ma_U_Time.py\n" } },
+    { "key": "alt+p", "command": "workbench.action.terminal.sendSequence", "args": { "text": "python3 result/2.Benchmark.py\n" }, "when": "terminalFocus" },
+    { "key": "alt+h", "command": "workbench.action.terminal.sendSequence", "args": { "text": "pvpython result/7.paraview_contour.py result/\n" }, "when": "terminalFocus" },
+    { "key": "alt+r", "command": "workbench.action.terminal.sendSequence", "args": { "text": "tail -f log$(date +%Y%m%d)\n" } },
+    { "key": "alt+s", "command": "workbench.action.terminal.sendSequence", "args": { "text": "ps aux | grep a.out | grep -v grep; echo '---'; tail -1 Ustar_Force_record.dat 2>/dev/null\n" } },
+    { "key": "alt+g", "command": "workbench.action.terminal.sendSequence", "args": { "text": "pvbatch animation/render_frame.py\n" }, "when": "terminalFocus" },
+    { "key": "alt+c", "command": "workbench.action.terminal.sendSequence", "args": { "text": "nvcc main.cu -arch=sm_60 -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out\n" } },
+    { "key": "alt+k", "command": "workbench.action.terminal.sendSequence", "args": { "text": "pkill -f a.out; pkill mpirun\n" } },
+    { "key": "alt+l", "command": "workbench.action.terminal.sendSequence", "args": { "text": "ls -lt result/*.vtk 2>/dev/null | head -10\n" } },
+    { "key": "alt+d", "command": "workbench.action.terminal.sendSequence", "args": { "text": "tail -20 checkrho.dat\n" } },
+    { "key": "alt+j", "command": "workbench.action.terminal.sendSequence", "args": { "text": "ps aux | grep a.out | grep -v grep\n" } },
+    { "key": "alt+b", "command": "workbench.action.terminal.sendSequence", "args": { "text": "cp -r result result_backup_$(date +%Y%m%d_%H%M%S) && echo 'Backup done'\n" } },
+    { "key": "alt+n", "command": "workbench.action.terminal.sendSequence", "args": { "text": "N=4; F=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '$2<100{print $1}'|head -n$N|paste -sd,); [ -z \"$F\" ]&&echo 'No free GPU!'||{ C=$(echo $F|awk -F, '{print NF}'); echo \"GPU:$F($C)\"; CUDA_VISIBLE_DEVICES=$F nohup mpirun -np $C ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "alt+w", "command": "workbench.action.tasks.runTask", "args": "Download VTK (.87)" },
+    { "key": "ctrl+shift+w", "command": "workbench.action.tasks.runTask", "args": "Download VTK (.154)" },
+    { "key": "ctrl+alt+w", "command": "workbench.action.tasks.runTask", "args": "Download VTK (NCHC)" },
+    { "key": "ctrl+d", "command": "-editor.action.addSelectionToNextFindMatch" },
+    { "key": "ctrl+d", "command": "markdown.showPreviewToSide", "when": "editorFocus && resourceLangId == markdown" },
+    { "key": "ctrl+d", "command": "editor.action.addSelectionToNextFindMatch", "when": "editorFocus && resourceLangId != markdown" },
+    { "key": "ctrl+alt+f", "command": "workbench.action.tasks.runTask", "args": "Switch Node" },
+    { "key": "ctrl+alt+g", "command": "workbench.action.tasks.runTask", "args": "Reconnect" },
+    { "key": "alt+e", "command": "python.execInTerminal", "when": "editorFocus && editorLangId == python" },
+    { "key": "alt+m", "command": "workbench.action.terminal.sendSequence", "args": { "text": "cd ~/Edit2_GILBM_auto && nohup python3 -u grid_convergence/run_grid_convergence.py > grid_convergence/pipeline_log_$(date +%Y%m%d).txt 2>&1 & sleep 1 && tail -f grid_convergence/pipeline_log_$(date +%Y%m%d).txt\n" } },
+    { "key": "shift+alt+4", "command": "workbench.action.terminal.sendSequence", "args": { "text": "BUSY=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits|awk -F', ' '($1>=4&&$1<=7)&&$2>100{print $1}'|paste -sd,); [ -n \"$BUSY\" ]&&echo '⚠ NVLink GPU 4-7 busy: '$BUSY||{ echo '🟢 NVLink-Safe GPU:4,5,6,7 (避開GPU0)'; CUDA_VISIBLE_DEVICES=4,5,6,7 nohup mpirun -np 4 ./a.out >log$(date +%Y%m%d) 2>&1 & }\n" } },
+    { "key": "ctrl+shift+n", "command": "workbench.action.tasks.runTask", "args": "SSH to NCHC" },
+    { "key": "ctrl+shift+u", "command": "workbench.action.tasks.runTask", "args": "Upload to NCHC" },
+    { "key": "ctrl+shift+d", "command": "workbench.action.tasks.runTask", "args": "Download from NCHC" },
+    { "key": "ctrl+shift+b", "command": "workbench.action.tasks.runTask", "args": "Compile + Submit NCHC" },
+    { "key": "ctrl+shift+j", "command": "workbench.action.tasks.runTask", "args": "NCHC Jobs" },
+    { "key": "ctrl+shift+k", "command": "workbench.action.tasks.runTask", "args": "Cancel NCHC Jobs" },
+    { "key": "ctrl+shift+s", "command": "workbench.action.tasks.runTask", "args": "NCHC Status" },
+    { "key": "ctrl+shift+t", "command": "workbench.action.tasks.runTask", "args": "NCHC Tail Log" },
+
+    // ───────── NCHC GILBM 生產快捷鍵 (單鍵 F5/F8/F9) ─────────
+    // F5 = 編譯+投 Round 1 (build_and_submit.sh)
+    // F8 = 查 queue 狀態
+    // F9 = 即時監看最新 slurm log
+    // 覆蓋 VSCode 預設 debug (F5=Start, F8=Next Problem, F9=Toggle Breakpoint)
+    { "key": "f5", "command": "runCommands",
+      "args": { "commands": [
+        "workbench.action.terminal.focus",
+        { "command": "workbench.action.terminal.sendSequence", "args": { "text": "bash build_and_submit.sh\u000D" } }
+      ] }
+    },
+    { "key": "f8", "command": "runCommands",
+      "args": { "commands": [
+        "workbench.action.terminal.focus",
+        { "command": "workbench.action.terminal.sendSequence", "args": { "text": "squeue -u $USER\u000D" } }
+      ] }
+    },
+    { "key": "f9", "command": "runCommands",
+      "args": { "commands": [
+        "workbench.action.terminal.focus",
+        { "command": "workbench.action.terminal.sendSequence", "args": { "text": "tail -F slurm_*.log\u000D" } }
+      ] }
+    }
+]

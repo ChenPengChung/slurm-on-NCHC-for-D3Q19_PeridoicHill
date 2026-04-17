@@ -1,0 +1,49 @@
+================================================================================
+ Experiment — PIV/LDA Water Channel Measurements
+================================================================================
+
+Primary Reference (Journal):
+  Rapp, Ch., Manhart, M. (2011).
+  "Flow over periodic hills: an experimental study."
+  Experiments in Fluids, 51(1), 247-269.
+  DOI: https://doi.org/10.1007/s00348-011-1045-y
+
+Primary Reference (Dissertation):
+  Rapp, Ch. (2009).
+  "Experimentelle Studie der turbulenten Strömung über periodische Hügel."
+  Dissertation, Technische Universität München.
+  (available from TUM library: https://mediatum.ub.tum.de)
+
+See also:
+  Breuer, M., Peller, N., Rapp, Ch., Manhart, M. (2009).
+  "Flow over periodic hills – Numerical and experimental study in a wide
+   range of Reynolds numbers."
+  Computers & Fluids, 38(2), 433-457.
+  DOI: https://doi.org/10.1016/j.compfluid.2008.05.002
+
+Institution:  Fachgebiet Hydromechanik, Technische Universität München (TUM)
+Authors:      Christoph Rapp, Michael Manhart
+Method:       2D-PIV (field measurements, 10000 samples per experiment)
+              1D-LDA (point measurements, ~40000 samples per point)
+              Water channel (11 m long, 90 cm broad, 10 hills, h=50 mm)
+Particles:    Hollow glass spheres, 8-12 µm diameter
+Resolution:   Interrogation area ≈ 0.09h (for Re=5600)
+
+Available Reynolds numbers:
+  Re=5600   (PIV, 300 flow-through-times)
+  Re=10600  (PIV)
+  Re=19000  (PIV)
+  Re=37000  (PIV)
+
+Data format: 6 columns, COMMA-separated, # comments
+  y/h, u/u_b, v/u_b, u'u'/u_b^2, v'v'/u_b^2, u'v'/u_b^2
+
+Note: No TKE (k) column — 2D PIV measures only two velocity components
+      ERCOFTAC u=streamwise, v=wall-normal
+
+10 stations: x/h = 0.05, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0
+File naming: UFR3-30_X_{Re}_data_CR-{001-010}.dat
+
+Source: ERCOFTAC Knowledge Base Wiki, UFR 3-30
+  https://kbwiki.ercoftac.org/w/index.php?title=UFR_3-30_Test_Case
+================================================================================

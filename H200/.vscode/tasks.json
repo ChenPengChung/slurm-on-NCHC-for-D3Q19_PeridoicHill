@@ -1,0 +1,2100 @@
+{
+    "version":  "2.0.0",
+    "tasks":  [
+                  {
+                      "label":  "SSH to cfdlab",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_GPUconnect.ps1' -ServerCombo '${input:serverCombo}'"
+                                  },
+                      "osx":  {
+                                  "command":  "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' ssh '${input:serverCombo}'"
+                              },
+                      "linux":  {
+                                    "command":  "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' ssh '${input:serverCombo}'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "runOptions":  {
+                                         "runOn":  "default"
+                                     },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "SSH to NCHC",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action ssh"
+                                  },
+                      "osx":  {
+                                  "command":  "ssh -t s8313697@nano4.nchc.org.tw 'cd /home/s8313697/Edit11_GILBM_GTSFrolichWENO7 && exec bash --login'"
+                              },
+                      "linux":  {
+                                    "command":  "ssh -t s8313697@nano4.nchc.org.tw 'cd /home/s8313697/Edit11_GILBM_GTSFrolichWENO7 && exec bash --login'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Upload to NCHC",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action upload"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac upload not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux upload not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Download from NCHC",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action download"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac download not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux download not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile NCHC",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action compile"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac compile not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux compile not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile + Submit NCHC",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action submit"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac submit not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux submit not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "NCHC Jobs",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action jobs"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac jobs not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux jobs not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Cancel NCHC Jobs",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action cancel"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac cancel not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux cancel not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "NCHC Status",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action status"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac status not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux status not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "NCHC Tail Log",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action tail"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac tail not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux tail not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "NCHC Sync Status",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "& '${workspaceFolder}\\.vscode\\Pwshell_NCHC_connect.ps1' -Action syncstatus"
+                                  },
+                      "osx":  {
+                                  "command":  "echo '[TODO] Mac syncstatus not implemented yet'"
+                              },
+                      "linux":  {
+                                    "command":  "echo '[TODO] Linux syncstatus not implemented yet'"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Reconnect",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_GPUconnect.ps1\u0027 -QuickPick \u0027${input:sshNodePicker}\u0027"
+                                  },
+                      "osx":  {
+                                  "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                              },
+                      "linux":  {
+                                    "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Switch Node",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_GPUconnect.ps1\u0027 -QuickPick \u0027${input:sshNodePicker}\u0027"
+                                  },
+                      "osx":  {
+                                  "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                              },
+                      "linux":  {
+                                    "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "SSH to cfdlab (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.87",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "SSH to cfdlab (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.154",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor154} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Switch Node (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.87",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Switch Node (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.154",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor154} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Reconnect (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.87",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Reconnect (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "chenpengchung@140.114.58.154",
+                                   "-t",
+                                   "ssh -t cfdlab-ib${input:nodeFor154} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill; exec bash\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile + Run (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill \u0026\u0026 nvcc main.cu -arch=sm_35 -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out \u0026\u0026 nohup mpirun -np ${input:gpuCount} ./a.out \u003e log$(date +%Y%m%d) 2\u003e\u00261 \u0026\u0027"
+                               ],
+                      "group":  {
+                                    "kind":  "build",
+                                    "isDefault":  true
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile + Run (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.154",
+                                   "ssh cfdlab-ib${input:nodeFor154} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill \u0026\u0026 nvcc main.cu -arch=sm_35 -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out \u0026\u0026 nohup mpirun -np ${input:gpuCount} ./a.out \u003e log$(date +%Y%m%d) 2\u003e\u00261 \u0026\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile Only (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill \u0026\u0026 nvcc main.cu -arch=sm_35 -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Compile Spill Check (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} 'cd /home/chenpengchung/D3Q27_PeriodicHill && nvcc main.cu -arch=sm_35 --ptxas-options=-v -I/home/chenpengchung/openmpi-3.0.3/include -L/home/chenpengchung/openmpi-3.0.3/lib -lmpi -o a.out 2>&1 | grep -iE \"spill|registers|cmem\"'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Run 4GPU (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill \u0026\u0026 nohup mpirun -np 4 ./a.out \u003e log$(date +%Y%m%d) 2\u003e\u00261 \u0026\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Run 4GPU NVLink-Safe (.87)",
+                      "detail": "避開 GPU 0 (溫度高)，使用 GPU 4-7 (NVLink 互連組)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} 'cd /home/chenpengchung/D3Q27_PeriodicHill && nohup env CUDA_VISIBLE_DEVICES=4,5,6,7 mpirun -np 4 ./a.out > log$(date +%Y%m%d) 2>&1 &'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Run 8GPU (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027cd /home/chenpengchung/D3Q27_PeriodicHill \u0026\u0026 nohup mpirun -np 8 ./a.out \u003e log$(date +%Y%m%d) 2\u003e\u00261 \u0026\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Check Running Jobs (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027ps aux | grep a.out | grep -v grep\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Check Running Jobs (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.154",
+                                   "ssh cfdlab-ib${input:nodeFor154} \u0027ps aux | grep a.out | grep -v grep\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Kill Running Job (.87)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.87",
+                                   "ssh cfdlab-ib${input:nodeFor87} \u0027pkill -f a.out || pkill mpirun\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Kill Running Job (.154)",
+                      "type":  "process",
+                      "command":  "C:\\Program Files\\PuTTY\\plink.exe",
+                      "args":  [
+                                   "-ssh",
+                                   "-pw",
+                                   "1256",
+                                   "-batch",
+                                   "chenpengchung@140.114.58.154",
+                                   "ssh cfdlab-ib${input:nodeFor154} \u0027pkill -f a.out || pkill mpirun\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Sync (Watch)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watch",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated",
+                                           "focus":  false
+                                       },
+                      "isBackground":  true,
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Quick Sync (Push if changed)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 autopush",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Download VTK (.87)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 pullvtk .87 1",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Download VTK (.154)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 pullvtk .154 1",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Download VTK (NCHC)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 pullvtknchc",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Download (Start)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpull",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Download (.87 only)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpull .87",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Download (.154 only)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpull .154",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Download (Status)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpull status",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Download (Stop)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpull stop",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Upload (Start)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpush",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Upload (Status)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpush status",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Auto Upload (Stop)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 watchpush stop",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Sync Status (Upload + Download)",
+                      "type":  "shell",
+                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_mainsystem.ps1\u0027 syncstatus",
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "Build main.exe (MinGW)",
+                      "type":  "shell",
+                      "command":  "C:/Strawberry/c/bin/g++.exe",
+                      "args":  [
+                                   "-std=c++17",
+                                   "-O3",
+                                   "-g",
+                                   "-fopenmp",
+                                   "${workspaceFolder}\\main.cpp",
+                                   "-o",
+                                   "${workspaceFolder}\\main.exe"
+                               ],
+                      "options":  {
+                                      "shell":  {
+                                                    "executable":  "powershell.exe"
+                                                },
+                                      "cwd":  "${workspaceFolder}"
+                                  },
+                      "problemMatcher":  [
+                                             "$gcc"
+                                         ],
+                      "group":  {
+                                    "kind":  "build",
+                                    "isDefault":  false
+                                }
+                  },
+                  {
+                      "type":  "cppbuild",
+                      "label":  "C/C++: g++.exe build active file",
+                      "command":  "C:/Strawberry/c/bin/g++.exe",
+                      "args":  [
+                                   "-fdiagnostics-color=always",
+                                   "-g",
+                                   "${file}",
+                                   "-o",
+                                   "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                                   "-fopenmp"
+                               ],
+                      "options":  {
+                                      "cwd":  "C:/Strawberry/c/bin"
+                                  },
+                      "problemMatcher":  [
+                                             "$gcc"
+                                         ],
+                      "group":  {
+                                    "kind":  "build",
+                                    "isDefault":  false
+                                },
+                      "detail":  "Task generated by Debugger."
+                  },
+                  {
+                      "label":  "[Mac] Check Environment",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 check"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] SSH to cfdlab",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 ssh \u0027${input:macServerCombo}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Compile + Run",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 run \u0027${input:macServerCombo}\u0027 \u0027${input:macGpuCount}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Compile Only",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 compile \u0027${input:macServerCombo}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Run (4GPU)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 execute \u0027${input:macServerCombo}\u0027 4"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Run (8GPU)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 execute \u0027${input:macServerCombo}\u0027 8"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Check Running Jobs",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 jobs \u0027${input:macServerCombo}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Kill Running Job",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 kill \u0027${input:macServerCombo}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Sync Status",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 syncstatus \u0027${input:macServerOrAll}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Pull (once)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 autopull \u0027${input:macServer}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Push (once)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 autopush \u0027${input:macServerOrAll}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Pull",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 watchpull \u0027${input:macServer}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated"
+                                       },
+                      "isBackground":  true,
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Push",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 watchpush \u0027${input:macServerOrAll}\u0027"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated"
+                                       },
+                      "isBackground":  true,
+                      "problemMatcher":  [
+
+                                         ]                  },
+                  {
+                      "label":  "[Mac] Quick Sync (Push if changed)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' autopush '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (Start)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull '${input:macServer}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (.87 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull 87"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (.154 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull 154"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (Status)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull status"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (Stop)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull stop"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Upload (Start)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpush '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Upload (Status)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpush status"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Upload (Stop)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpush stop"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Sync Status (Upload + Download)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' syncstatus '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Background Status (All)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' bgstatus"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] GPU Status (All Servers)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' gpus"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] GPU Detail (.89)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' gpu 89"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] GPU Detail (.87)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' gpu 87"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] GPU Detail (.154)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' gpu 154"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Diff (Compare local vs remote)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' diff '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Push (Upload + Delete remote extras)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' push '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Pull (.87)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' pull 87"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Pull (.154)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' pull 154"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Fetch (.87, Download + Delete)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' fetch 87"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Fetch (.154, Download + Delete)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' fetch 154"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Fetch (.89, Download + Delete)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' fetch 89"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Pull (.89)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' pull 89"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (.89 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch 89"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Download (.89 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpull 89"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Log (Remote)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' log '${input:macServer}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Is Synced (Quick Check)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' issynced"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Fetch (once)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' autofetch '${input:macServer}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (Start)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch '${input:macServer}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (.87 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch 87"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (.154 only)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch 154"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (Status)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch status"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Watch Fetch (Stop)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchfetch stop"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] VTK Rename (Start)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' vtkrename"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] VTK Rename (Status)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' vtkrename status"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] VTK Rename (Stop)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' vtkrename stop"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared"
+                                       },
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] Auto Sync (Watch)",
+                      "type":  "process",
+                      "command":  "bash",
+                      "args":  [
+                                   "-lc",
+                                   "'${workspaceFolder}/.vscode/Zsh_mainsystem.sh' watchpush '${input:macServerOrAll}'"
+                               ],
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "dedicated",
+                                           "focus":  false
+                                       },
+                      "isBackground":  true,
+                      "problemMatcher":  [
+
+                                         ]
+                  },
+                  {
+                      "label":  "[Mac] SSH 選單 (開啟時自動)",
+                      "type":  "shell",
+                      "windows":  {
+                                      "command":  "\u0026 \u0027${workspaceFolder}\\.vscode\\Pwshell_GPUconnect.ps1\u0027 -QuickPick \u0027${input:sshNodePicker}\u0027"
+                                  },
+                      "osx":  {
+                                  "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                              },
+                      "linux":  {
+                                    "command":  "\u0027${workspaceFolder}/.vscode/Zsh_mainsystem.sh\u0027 issh-quick \u0027${input:sshNodePicker}\u0027"
+                                },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "new",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  [],
+                      "runOptions":  {
+                                         "runOn":  "folderOpen"
+                                     }
+                  },
+                  {
+                      "label":  "Run Benchmark Plot",
+                      "type":  "process",
+                      "command":  "python3",
+                      "args":  [
+                                   "${workspaceFolder}/result/2.Benchmark.py"
+                               ],
+                      "windows":  {
+                                      "command":  "python"
+                                  },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  []
+                  },
+                  {
+                      "label":  "Run Time Series Plot",
+                      "type":  "process",
+                      "command":  "python3",
+                      "args":  [
+                                   "${workspaceFolder}/result/4.Ma_U_Time.py"
+                               ],
+                      "windows":  {
+                                      "command":  "python"
+                                  },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  []
+                  },
+                  {
+                      "label":  "Run Interp2D Test",
+                      "type":  "process",
+                      "command":  "python3",
+                      "args":  [
+                                   "${workspaceFolder}/result/test_interp2d.py"
+                               ],
+                      "windows":  {
+                                      "command":  "python",
+                                      "args":  [
+                                                   "${workspaceFolder}/result/test_interp2d.py"
+                                               ]
+                                  },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  []
+                  },
+                  {
+                      "label":  "Run Lagrange6 Benchmark Test",
+                      "type":  "process",
+                      "command":  "python3",
+                      "args":  [
+                                   "${workspaceFolder}/result/test_benchmark_lagrange6.py"
+                               ],
+                      "windows":  {
+                                      "command":  "python",
+                                      "args":  [
+                                                   "${workspaceFolder}/result/test_benchmark_lagrange6.py"
+                                               ]
+                                  },
+                      "presentation":  {
+                                           "reveal":  "always",
+                                           "panel":  "shared",
+                                           "focus":  true
+                                       },
+                      "problemMatcher":  []
+                  }
+              ],
+    "inputs":  [
+                   {
+                       "id":  "sshNodePicker",
+                       "type":  "pickString",
+                       "description":  "\ud83d\udda5 SSH \u7bc0\u9ede\u9078\u64c7 \u2014 \u9078\u5b8c\u5373\u9023\u7dda",
+                       "options":  [
+                                       {
+                                           "label":  "\u2500\u2500\u2500 \ud83d\udcbb cfdlab \u5be6\u9a57\u5ba4 (.87 / .89 / .154) \u2500\u2500\u2500",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  "\u26a1\u26a1 .89  \u76f4\u9023  \u2502 8\u00d7 V100-32G  \u2502 NVLink",
+                                           "value":  "89:0",
+                                           "description":  "140.114.58.89 \u2014 \u6700\u5f37\u7bc0\u9ede"
+                                       },
+                                       {
+                                           "label":  "\u26a1  .87\u2192ib6  \u2502 8\u00d7 V100-16G  \u2502 SXM2",
+                                           "value":  "87:6",
+                                           "description":  "140.114.58.87 \u2192 cfdlab-ib6"
+                                       },
+                                       {
+                                           "label":  "   .87\u2192ib2  \u2502 8\u00d7 P100-16G",
+                                           "value":  "87:2",
+                                           "description":  "140.114.58.87 \u2192 cfdlab-ib2"
+                                       },
+                                       {
+                                           "label":  "   .87\u2192ib3  \u2502 8\u00d7 P100-16G",
+                                           "value":  "87:3",
+                                           "description":  "140.114.58.87 \u2192 cfdlab-ib3"
+                                       },
+                                       {
+                                           "label":  "   .87\u2192ib5  \u2502 8\u00d7 P100-16G",
+                                           "value":  "87:5",
+                                           "description":  "140.114.58.87 \u2192 cfdlab-ib5"
+                                       },
+                                       {
+                                           "label":  "   .154\u2192ib1 \u2502 8\u00d7 P100-16G",
+                                           "value":  "154:1",
+                                           "description":  "140.114.58.154 \u2192 cfdlab-ib1"
+                                       },
+                                       {
+                                           "label":  "   .154\u2192ib4 \u2502 8\u00d7 P100-16G",
+                                           "value":  "154:4",
+                                           "description":  "140.114.58.154 \u2192 cfdlab-ib4"
+                                       },
+                                       {
+                                           "label":  "   .154\u2192ib7 \u2502 8\u00d7 P100-16G",
+                                           "value":  "154:7",
+                                           "description":  "140.114.58.154 \u2192 cfdlab-ib7"
+                                       },
+                                       {
+                                           "label":  "   .154\u2192ib9 \u2502 8\u00d7 P100-16G",
+                                           "value":  "154:9",
+                                           "description":  "140.114.58.154 \u2192 cfdlab-ib9"
+                                       },
+                                       {
+                                           "label":  "\ud83d\udcca \u5148\u67e5 GPU \u4f7f\u7528\u72c0\u614b\u518d\u9078",
+                                           "value":  "gpus",
+                                           "description":  "\u5373\u6642\u67e5\u8a62\u5168\u90e8\u7bc0\u9ede GPU \u4f7f\u7528\u7387"
+                                       },
+                                       {
+                                           "label":  "\u2500\u2500\u2500 \ud83c\udf10 \u570b\u7db2\u4e2d\u5fc3 NCHC (\u9060\u7aef HPC) \u2500\u2500\u2500",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  "\ud83d\ude80 NCHC nano4   \u2502 H200-80G  \u2502 Slurm \u2502 2FA PUSH",
+                                           "value":  "nchc:0",
+                                           "description":  "nano4.nchc.org.tw \u2014 \u624b\u6a5f\u63a8\u64ad\u9a57\u8b49\u767b\u5165"
+                                       }
+                                   ],
+                       "default":  "87:3"
+                   },
+                   {
+                       "id":  "serverCombo",
+                       "type":  "pickString",
+                       "description":  "選擇伺服器＋節點",
+                       "options":  [
+                                       {
+                                           "label":  "─── 💻 cfdlab 實驗室 (.87 / .89 / .154) ───",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  "⚡⚡ .89  直連  │ 8× V100-32G  │ NVLink",
+                                           "value":  "89:0",
+                                           "description":  "140.114.58.89 — 最強節點"
+                                       },
+                                       {
+                                           "label":  "⚡  .87→ib6  │ 8× V100-16G  │ SXM2",
+                                           "value":  "87:6",
+                                           "description":  "140.114.58.87 → cfdlab-ib6"
+                                       },
+                                       {
+                                           "label":  "   .87→ib2  │ 8× P100-16G",
+                                           "value":  "87:2",
+                                           "description":  "140.114.58.87 → cfdlab-ib2"
+                                       },
+                                       {
+                                           "label":  "   .87→ib3  │ 8× P100-16G",
+                                           "value":  "87:3",
+                                           "description":  "140.114.58.87 → cfdlab-ib3"
+                                       },
+                                       {
+                                           "label":  "   .87→ib5  │ 8× P100-16G",
+                                           "value":  "87:5",
+                                           "description":  "140.114.58.87 → cfdlab-ib5"
+                                       },
+                                       {
+                                           "label":  "   .154→ib1 │ 8× P100-16G",
+                                           "value":  "154:1",
+                                           "description":  "140.114.58.154 → cfdlab-ib1"
+                                       },
+                                       {
+                                           "label":  "   .154→ib4 │ 8× P100-16G",
+                                           "value":  "154:4",
+                                           "description":  "140.114.58.154 → cfdlab-ib4"
+                                       },
+                                       {
+                                           "label":  "   .154→ib7 │ 8× P100-16G",
+                                           "value":  "154:7",
+                                           "description":  "140.114.58.154 → cfdlab-ib7"
+                                       },
+                                       {
+                                           "label":  "   .154→ib9 │ 8× P100-16G",
+                                           "value":  "154:9",
+                                           "description":  "140.114.58.154 → cfdlab-ib9"
+                                       },
+                                       {
+                                           "label":  "─── 🌐 國網中心 NCHC (遠端 HPC) ───",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  "🚀 NCHC nano4   │ H200-80G  │ Slurm │ 2FA PUSH",
+                                           "value":  "nchc:0",
+                                           "description":  "nano4.nchc.org.tw — 手機推播驗證登入"
+                                       }
+                                   ],
+                       "default":  "87:3"
+                   },
+                   {
+                       "id":  "nodeFor87",
+                       "type":  "pickString",
+                       "description":  "選擇節點 (via .87)",
+                       "options":  [
+                                       {
+                                           "label":  "ib2",
+                                           "value":  "2",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  "ib3",
+                                           "value":  "3",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  "ib5",
+                                           "value":  "5",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  "ib6",
+                                           "value":  "6",
+                                           "description":  "8× Tesla V100 16GB ⚡"
+                                       }
+                                   ],
+                       "default":  "3"
+                   },
+                   {
+                       "id":  "nodeFor154",
+                       "type":  "pickString",
+                       "description":  "選擇節點 (via .154)",
+                       "options":  [
+                                       {
+                                           "label":  "ib1",
+                                           "value":  "1",
+                                           "description":  "P100 (目前離線)"
+                                       },
+                                       {
+                                           "label":  "ib4",
+                                           "value":  "4",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  "ib7",
+                                           "value":  "7",
+                                           "description":  "P100 (目前離線)"
+                                       },
+                                       {
+                                           "label":  "ib9",
+                                           "value":  "9",
+                                           "description":  "8× Tesla P100 16GB"
+                                       }
+                                   ],
+                       "default":  "4"
+                   },
+                   {
+                       "id":  "gpuCount",
+                       "type":  "pickString",
+                       "description":  "選擇使用幾顆 GPU",
+                       "options":  [
+                                       {
+                                           "label":  "4",
+                                           "value":  "4",
+                                           "description":  "半數 GPU"
+                                       },
+                                       {
+                                           "label":  "8",
+                                           "value":  "8",
+                                           "description":  "整台滿載"
+                                       }
+                                   ],
+                       "default":  "4"
+                   },
+                   {
+                       "id":  "macServerCombo",
+                       "type":  "pickString",
+                       "description":  "Mac: choose server and node",
+                       "options":  [
+                                       {
+                                           "label":  "── .87 伺服器 (140.114.58.87) ──",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  ".87 → ib2",
+                                           "value":  "87:2",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  ".87 → ib3",
+                                           "value":  "87:3",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  ".87 → ib5",
+                                           "value":  "87:5",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  ".87 → ib6",
+                                           "value":  "87:6",
+                                           "description":  "8× Tesla V100 16GB ⚡"
+                                       },
+                                       {
+                                           "label":  "── .89 伺服器 (140.114.58.89) ──",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  ".89 (direct)",
+                                           "value":  "89:0",
+                                           "description":  "8× Tesla V100 32GB ⚡⚡"
+                                       },
+                                       {
+                                           "label":  "── .154 伺服器 (140.114.58.154) ──",
+                                           "value":  ""
+                                       },
+                                       {
+                                           "label":  ".154 → ib1",
+                                           "value":  "154:1",
+                                           "description":  "P100 (目前離線)"
+                                       },
+                                       {
+                                           "label":  ".154 → ib4",
+                                           "value":  "154:4",
+                                           "description":  "8× Tesla P100 16GB"
+                                       },
+                                       {
+                                           "label":  ".154 → ib7",
+                                           "value":  "154:7",
+                                           "description":  "P100 (目前離線)"
+                                       },
+                                       {
+                                           "label":  ".154 → ib9",
+                                           "value":  "154:9",
+                                           "description":  "8× Tesla P100 16GB"
+                                       }
+                                   ],
+                       "default":  "87:3"
+                   },
+                   {
+                       "id":  "macServer",
+                       "type":  "pickString",
+                       "description":  "Mac: choose one server",
+                       "options":  [
+                                       {
+                                           "label":  "87",
+                                           "value":  "87",
+                                           "description":  "140.114.58.87 — ib2/ib3/ib5/ib6"
+                                       },
+                                       {
+                                           "label":  "89",
+                                           "value":  "89",
+                                           "description":  "140.114.58.89 — 8× V100 32GB ⚡⚡"
+                                       },
+                                       {
+                                           "label":  "154",
+                                           "value":  "154",
+                                           "description":  "140.114.58.154 — ib1/ib4/ib7/ib9"
+                                       }
+                                   ],
+                       "default":  "87"
+                   },
+                   {
+                       "id":  "macServerOrAll",
+                       "type":  "pickString",
+                       "description":  "Mac: choose one server or all",
+                       "options":  [
+                                       {
+                                           "label":  "all",
+                                           "value":  "all",
+                                           "description":  "三台伺服器同時執行"
+                                       },
+                                       {
+                                           "label":  "87",
+                                           "value":  "87",
+                                           "description":  "140.114.58.87"
+                                       },
+                                       {
+                                           "label":  "89",
+                                           "value":  "89",
+                                           "description":  "140.114.58.89"
+                                       },
+                                       {
+                                           "label":  "154",
+                                           "value":  "154",
+                                           "description":  "140.114.58.154"
+                                       }
+                                   ],
+                       "default":  "all"
+                   },
+                   {
+                       "id":  "macGpuCount",
+                       "type":  "pickString",
+                       "description":  "Mac: GPU count",
+                       "options":  [
+                                       {
+                                           "label":  "4",
+                                           "value":  "4",
+                                           "description":  "半數 GPU"
+                                       },
+                                       {
+                                           "label":  "8",
+                                           "value":  "8",
+                                           "description":  "整台滿載"
+                                       }
+                                   ],
+                       "default":  "4"
+                   }
+               ]
+}
