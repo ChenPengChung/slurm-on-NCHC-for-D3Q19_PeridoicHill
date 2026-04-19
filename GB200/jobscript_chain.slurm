@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=GILBM_PH
+#SBATCH --job-name=GB200_Edit11
 #SBATCH --account=MST114348
 #SBATCH --partition=gb200-dev
 #SBATCH --nodes=2
