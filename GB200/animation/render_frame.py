@@ -328,18 +328,37 @@ def setup_camera(ren, bounds):
     cam.SetParallelScale((zmax - zmin) * 0.58)
 
 
-def setup_scalar_bar(lut, ren, title="u_streamwise"):
-    """色標列 — Times New Roman Bold, fixed-point labels"""
+def setup_scalar_bar(lut, ren, title="u_streamwise", value_range=None, n_ticks=8):
+    """色標列 — Times New Roman Bold, fixed-point labels
+    （只給 Path A/B/C 的 7 張圖用；Path D Q-criterion 有獨立 barD 不受影響）
+    value_range=(lo,hi) 指定後會強制顯示 n_ticks 個 tick（避開 ParaView 的自動密集 tick）"""
     bar = GetScalarBar(lut, ren)
     bar.Title = title
     bar.ComponentTitle = ""
-    # MathText ($...$) 分數/上下標需要較大字才清楚
-    bar.TitleFontSize = 24
-    bar.LabelFontSize = 16
+    # 字體放大：Title 80pt, Label 40pt
+    bar.TitleFontSize = 80
+    bar.LabelFontSize = 40
     bar.Orientation = "Vertical"
     bar.WindowLocation = "Any Location"
-    bar.Position = [0.90, 0.12]
-    bar.ScalarBarLength = 0.76
+    # 色條延伸至幾乎全高（y 起點 0.02，長度 0.96）
+    bar.Position = [0.92, 0.02]
+    bar.ScalarBarLength = 0.96
+    # 色條本體加粗 1.5 倍（ParaView 預設 ScalarBarThickness ≈ 16 → 24）
+    try: bar.ScalarBarThickness = 24
+    except: pass
+    # ── 強制 n_ticks 個 tick（用 CustomLabels，比 NumberOfLabels 可靠）──
+    if value_range is not None:
+        lo, hi = value_range
+        ticks = [lo + (hi - lo) * i / (n_ticks - 1) for i in range(n_ticks)]
+        try: bar.UseCustomLabels = 1
+        except: pass
+        try: bar.CustomLabels = ticks
+        except: pass
+        try: bar.AddRangeLabels = 0    # 避免兩端被重複加 tick
+        except: pass
+    else:
+        try: bar.NumberOfLabels = n_ticks
+        except: pass
     bar.TitleColor = [0, 0, 0]
     bar.LabelColor = [0, 0, 0]
     # Times New Roman Bold
@@ -347,12 +366,19 @@ def setup_scalar_bar(lut, ren, title="u_streamwise"):
     bar.LabelFontFamily = "Times"
     bar.TitleBold = 1
     bar.LabelBold = 1
-    # 固定小數格式，避免科學記號 (1.3e+00 → 1.3)
-    try: bar.RangeLabelFormat = "%-#6.1f"
-    except: pass
+    # 根據數值範圍選擇 tick 精度（避免 0.1 重複）
+    if value_range is not None:
+        span = abs(value_range[1] - value_range[0])
+        if span < 0.1:    fmt = "%-#6.3f"
+        elif span < 1.0:  fmt = "%-#6.2f"
+        else:             fmt = "%-#6.1f"
+    else:
+        fmt = "%-#6.1f"
     try: bar.AutomaticLabelFormat = 0
     except: pass
-    try: bar.LabelFormat = "%-#6.1f"
+    try: bar.RangeLabelFormat = fmt
+    except: pass
+    try: bar.LabelFormat = fmt
     except: pass
     return bar
 
@@ -569,7 +595,7 @@ lutA.RGBPoints = build_rgb_points(lo_A, hi_A, KEY_COLORS)
 harden_lut(lutA)
 dispA.LookupTable = lutA
 dispA.SetScalarBarVisibility(renA, True)
-setup_scalar_bar(lutA, renA, r"$u/U_{ref}$")
+setup_scalar_bar(lutA, renA, r"$u/U_{ref}$", value_range=(lo_A, hi_A))
 
 setup_camera(renA, bounds)
 setup_axes_grid(renA, bounds)
@@ -659,7 +685,7 @@ elif has_Umean and has_Wmean:
     harden_lut(lutB)
     dispB.LookupTable = lutB
     dispB.SetScalarBarVisibility(renB, True)
-    setup_scalar_bar(lutB, renB, r"$\langle u \rangle / U_{ref}$")
+    setup_scalar_bar(lutB, renB, r"$\langle u \rangle / U_{ref}$", value_range=(lo_B, hi_B))
 
     # ── 用平均速度向量 (0, U_mean, W_mean) 畫流線 ──
     add_mean_streamlines(reader, renB, bounds)
@@ -739,7 +765,7 @@ elif has_TKE_computable:
     harden_lut(lutC)
     dispC.LookupTable = lutC
     dispC.SetScalarBarVisibility(renC, True)
-    setup_scalar_bar(lutC, renC, r"$k/U_{ref}^{2}$")
+    setup_scalar_bar(lutC, renC, r"$k/U_{ref}^{2}$", value_range=(lo_C, hi_C))
 
     setup_camera(renC, bounds)
     setup_axes_grid(renC, bounds)
