@@ -21,6 +21,8 @@ import os, sys, glob, math
 VTK_FILE = None
 OUTDIR = "gif_frames"
 STEP_NUM = None
+VIDEO_MODE = False      # True = 影片模式 (只吐 frame_cont + frame_RD)
+                        # False = 人工模式 (8 張 PNG 全輸出)
 
 args = sys.argv[1:]
 i = 0
@@ -29,23 +31,36 @@ while i < len(args):
         OUTDIR = args[i+1]; i += 2
     elif args[i] == "--step" and i+1 < len(args):
         STEP_NUM = int(args[i+1].rstrip('.')); i += 2
+    elif args[i] == "--video-mode":
+        VIDEO_MODE = True; i += 1
     elif not args[i].startswith("--"):
         VTK_FILE = os.path.abspath(args[i]); i += 1
     else:
         i += 1
 
 if VTK_FILE is None:
-    # 自動搜尋最新 VTK 檔案
+    # 自動搜尋最新「非空」VTK 檔案（跳過 0 bytes 的截斷檔）
+    MIN_VALID_BYTES = 1024  # 小於 1 KiB 視為無效（正常 VTK > 1 GB）
     search_dirs = ["result", "../result", "."]
     for d in search_dirs:
         pattern = os.path.join(d, "velocity_merged_*.vtk")
         matches = sorted(glob.glob(pattern))
-        if matches:
-            VTK_FILE = os.path.abspath(matches[-1])
+        # 從新到舊挑第一個有效的檔
+        for cand in reversed(matches):
+            try:
+                sz = os.path.getsize(cand)
+            except OSError:
+                continue
+            if sz < MIN_VALID_BYTES:
+                print("Skip empty/truncated VTK (%d bytes): %s" % (sz, cand))
+                continue
+            VTK_FILE = os.path.abspath(cand)
             print("Auto-detected latest VTK: " + VTK_FILE)
             break
+        if VTK_FILE is not None:
+            break
     if VTK_FILE is None:
-        print("ERROR: No VTK file specified and none found in result/.")
+        print("ERROR: No valid VTK file specified and none found in result/.")
         print("Usage: pvpython render_frame.py [vtk_file]")
         sys.exit(1)
 
@@ -57,26 +72,30 @@ if not os.path.isdir(OUTDIR):
     os.makedirs(OUTDIR)
 
 if STEP_NUM is not None:
-    OUT_INST      = os.path.join(OUTDIR, "frame_%06d.png" % STEP_NUM)
-    OUT_INST_CONT = os.path.join(OUTDIR, "frame_%06d_cont.png" % STEP_NUM)
-    OUT_MEAN      = os.path.join(OUTDIR, "Umean_%06d.png" % STEP_NUM)
-    OUT_MEAN_CONT = os.path.join(OUTDIR, "Umean_%06d_cont.png" % STEP_NUM)
-    OUT_TKE_CONT  = os.path.join(OUTDIR, "TKE_%06d_cont.png" % STEP_NUM)
-    OUT_QCRIT     = os.path.join(OUTDIR, "Qcrit_%06d.png" % STEP_NUM)
+    OUT_INST         = os.path.join(OUTDIR, "frame_%06d.png" % STEP_NUM)
+    OUT_INST_CONT    = os.path.join(OUTDIR, "frame_%06d_cont.png" % STEP_NUM)
+    OUT_INST_RD      = os.path.join(OUTDIR, "frame_%06d_RD.png" % STEP_NUM)
+    OUT_INST_RD_CONT = os.path.join(OUTDIR, "frame_%06d_RD_cont.png" % STEP_NUM)
+    OUT_MEAN         = os.path.join(OUTDIR, "Umean_%06d.png" % STEP_NUM)
+    OUT_MEAN_CONT    = os.path.join(OUTDIR, "Umean_%06d_cont.png" % STEP_NUM)
+    OUT_TKE_CONT     = os.path.join(OUTDIR, "TKE_%06d_cont.png" % STEP_NUM)
+    OUT_QCRIT        = os.path.join(OUTDIR, "Qcrit_%06d.png" % STEP_NUM)
 else:
     base = os.path.splitext(os.path.basename(VTK_FILE))[0]
-    OUT_INST      = os.path.join(OUTDIR, base + "_inst.png")
-    OUT_INST_CONT = os.path.join(OUTDIR, base + "_inst_cont.png")
-    OUT_MEAN      = os.path.join(OUTDIR, base + "_Umean.png")
-    OUT_MEAN_CONT = os.path.join(OUTDIR, base + "_Umean_cont.png")
-    OUT_TKE_CONT  = os.path.join(OUTDIR, base + "_TKE_cont.png")
-    OUT_QCRIT     = os.path.join(OUTDIR, base + "_Qcrit.png")
+    OUT_INST         = os.path.join(OUTDIR, base + "_inst.png")
+    OUT_INST_CONT    = os.path.join(OUTDIR, base + "_inst_cont.png")
+    OUT_INST_RD      = os.path.join(OUTDIR, base + "_inst_RD.png")
+    OUT_INST_RD_CONT = os.path.join(OUTDIR, base + "_inst_RD_cont.png")
+    OUT_MEAN         = os.path.join(OUTDIR, base + "_Umean.png")
+    OUT_MEAN_CONT    = os.path.join(OUTDIR, base + "_Umean_cont.png")
+    OUT_TKE_CONT     = os.path.join(OUTDIR, base + "_TKE_cont.png")
+    OUT_QCRIT        = os.path.join(OUTDIR, base + "_Qcrit.png")
 
 # ═══════════════════════════════════════════════════════════════════
 # §1  渲染參數（完全沿用 7.paraview_contour.py）
 # ═══════════════════════════════════════════════════════════════════
-IMAGE_W, IMAGE_H = 2800, 800      # 排版尺寸（決定元素位置，不要改）
-SAVE_SCALE = 2                     # 輸出倍率：2x → 5600×1600 實際像素
+IMAGE_W, IMAGE_H = 5600, 1600     # 直接用原生解析，避免 ViewSize→ImageResolution 的 GPU upscale 造成霧化
+SAVE_SCALE = 1
 SAVE_W, SAVE_H = IMAGE_W * SAVE_SCALE, IMAGE_H * SAVE_SCALE
 
 NUM_MAIN_SEEDS = 10
@@ -88,10 +107,11 @@ MAX_STEPS = 6000
 STREAMLINE_WIDTH_MAIN = 2.8
 STREAMLINE_WIDTH_VORTEX = 1.5
 
-# ── Q-criterion 參數（對齊 4.Q-criterion_Animation.py 參考範本）──
-Q_AUTO_FRACTION = 0.05            # 初始 Q_threshold = Qmax * 5%
-Q_CELLS_TARGET_LO = 20000         # 目標下限（參考範本 TARGET_CELLS_MIN）
-Q_CELLS_TARGET_HI = 80000         # 目標上限（參考範本 TARGET_CELLS_MAX）
+# ── Q-criterion 參數 ──
+Q_AUTO_FRACTION = 0.05            # fallback: 初始 Q_threshold = Qmax * 5%
+Q_CELLS_TARGET_LO = 20000
+Q_CELLS_TARGET_HI = 80000
+Q_COVERAGE = 0.02                 # 渦流結構覆蓋 = 1% 流場點數 (Q > threshold) → 只留強渦管，對齊 Frohlich/Breuer 可視化風格
 Q_IMG_W, Q_IMG_H = 1920, 1080     # 與參考範本 IMG_SIZE 一致 (16:9)
 Q_OPACITY = 0.8                   # 與參考範本 OPACITY 一致
 W_RANGE = [-0.02, 0.02]           # 與參考範本 W_RANGE 一致（固定範圍，不做對稱重縮）
@@ -139,7 +159,7 @@ def build_rgb_points(lo, hi, key_colors):
 
 
 def setup_view(ren):
-    """白底 + 隱藏 XYZ widget"""
+    """白底 + 隱藏 XYZ widget + 關閉 FXAA/MSAA 避免色塊霧化"""
     ren.Background = [1.0, 1.0, 1.0]
     ren.Background2 = [1.0, 1.0, 1.0]
     try: ren.UseColorPaletteForBackground = 0
@@ -149,6 +169,74 @@ def setup_view(ren):
     try: LoadPalette(paletteName='WhiteBackground')
     except: pass
     ren.OrientationAxesVisibility = 0
+    # 關掉抗鋸齒 → 避免色塊邊緣被模糊掉（造成整體「霧」感）
+    try: ren.UseFXAA = 0
+    except: pass
+    try: ren.MultiSamples = 0
+    except: pass
+    try: ren.StillRenderImageReductionFactor = 1
+    except: pass
+
+
+def flatten_display(disp):
+    """2D 剖面 flat unlit shading — Ambient=1, Diffuse=0 避免光照稀釋顏色"""
+    try: disp.Ambient = 1.0
+    except: pass
+    try: disp.Diffuse = 0.0
+    except: pass
+    try: disp.Specular = 0.0
+    except: pass
+    try: disp.Interpolation = "Flat"
+    except: pass
+    try: disp.Opacity = 1.0
+    except: pass
+    # 開啟 → 先頂點插值純量再查 LUT，配合 Discretize=1 產生 surface 離散色塊
+    try: disp.InterpolateScalarsBeforeMapping = 1
+    except: pass
+
+
+def resample_lut_to_n_keys(lut, n, lo, hi):
+    """ApplyPreset 之後把 RGBPoints 重採樣成 n 個控制點（[lo, hi] 範圍），
+    讓 preset 色階的可見色帶數與 KEY_COLORS (build_rgb_points 33 點) 一致。"""
+    src = list(lut.RGBPoints)
+    if len(src) < 4:
+        return
+    tuples = []
+    for i in range(0, len(src), 4):
+        tuples.append((src[i], src[i+1], src[i+2], src[i+3]))
+    tuples.sort(key=lambda t: t[0])
+    x_min, x_max = tuples[0][0], tuples[-1][0]
+    if x_max <= x_min:
+        return
+    new_pts = []
+    for i in range(n):
+        t = i / (n - 1.0)
+        x_src = x_min + t * (x_max - x_min)
+        r, g, b = tuples[-1][1], tuples[-1][2], tuples[-1][3]
+        for j in range(len(tuples) - 1):
+            x0, r0, g0, b0 = tuples[j]
+            x1, r1, g1, b1 = tuples[j+1]
+            if x0 <= x_src <= x1:
+                s = (x_src - x0) / (x1 - x0) if x1 > x0 else 0.0
+                r = r0 + (r1 - r0) * s
+                g = g0 + (g1 - g0) * s
+                b = b0 + (b1 - b0) * s
+                break
+        x_new = lo + t * (hi - lo)
+        new_pts.extend([x_new, r, g, b])
+    lut.RGBPoints = new_pts
+
+
+def harden_lut(lut, n_bands=256):
+    """關透明度映射 + 離散色表 → 消除霧感 / 避免 alpha blending 帶來的半透明"""
+    try: lut.EnableOpacityMapping = 0
+    except: pass
+    try: lut.Discretize = 1
+    except: pass
+    try: lut.NumberOfTableValues = n_bands
+    except: pass
+    try: lut.NanOpacity = 1.0
+    except: pass
 
 
 def setup_axes_grid(ren, bounds):
@@ -311,8 +399,12 @@ def add_mean_streamlines(reader, ren, bounds):
     sd1 = Show(st1, ren)
     sd1.Representation = "Wireframe"
     sd1.LineWidth = STREAMLINE_WIDTH_MAIN
-    sd1.AmbientColor = [0.12, 0.12, 0.12]
-    sd1.DiffuseColor = [0.12, 0.12, 0.12]
+    sd1.AmbientColor = [0.0, 0.0, 0.0]
+    sd1.DiffuseColor = [0.0, 0.0, 0.0]
+    try: sd1.Ambient = 1.0
+    except: pass
+    try: sd1.Diffuse = 0.0
+    except: pass
     ColorBy(sd1, None)
     sd1.SetScalarBarVisibility(ren, False)
 
@@ -369,8 +461,12 @@ def add_mean_streamlines(reader, ren, bounds):
                     sd2 = Show(st2, ren)
                     sd2.Representation = "Wireframe"
                     sd2.LineWidth = STREAMLINE_WIDTH_VORTEX
-                    sd2.AmbientColor = [0.05, 0.05, 0.05]
-                    sd2.DiffuseColor = [0.05, 0.05, 0.05]
+                    sd2.AmbientColor = [0.0, 0.0, 0.0]
+                    sd2.DiffuseColor = [0.0, 0.0, 0.0]
+                    try: sd2.Ambient = 1.0
+                    except: pass
+                    try: sd2.Diffuse = 0.0
+                    except: pass
                     ColorBy(sd2, None)
                     sd2.SetScalarBarVisibility(ren, False)
                 else:
@@ -457,6 +553,7 @@ setup_view(renA)
 dispA = Show(calcA, renA)
 dispA.Representation = "Surface"
 dispA.ColorArrayName = ["POINTS", "u_streamwise"]
+flatten_display(dispA)
 
 lutA = GetColorTransferFunction("u_streamwise")
 infoA = calcA.GetDataInformation().GetPointDataInformation().GetArrayInformation("u_streamwise")
@@ -469,6 +566,7 @@ log("u_streamwise range: [%.4f, %.4f]" % (lo_A, hi_A))
 
 lutA.ColorSpace = "Step"
 lutA.RGBPoints = build_rgb_points(lo_A, hi_A, KEY_COLORS)
+harden_lut(lutA)
 dispA.LookupTable = lutA
 dispA.SetScalarBarVisibility(renA, True)
 setup_scalar_bar(lutA, renA, r"$u/U_{ref}$")
@@ -476,17 +574,43 @@ setup_scalar_bar(lutA, renA, r"$u/U_{ref}$")
 setup_camera(renA, bounds)
 setup_axes_grid(renA, bounds)
 
-Render(renA)
-SaveScreenshot(OUT_INST, renA, ImageResolution=[SAVE_W, SAVE_H],
-               OverrideColorPalette='WhiteBackground')
-log("Path A saved (step):       " + OUT_INST)
+if not VIDEO_MODE:
+    Render(renA)
+    SaveScreenshot(OUT_INST, renA, ImageResolution=[SAVE_W, SAVE_H],
+                   OverrideColorPalette='WhiteBackground')
+    log("Path A saved (step):       " + OUT_INST)
+else:
+    log("Path A step skipped (video-mode)")
 
-# ── 連續色標版本：切到 RGB 空間後重新渲染輸出 ──
+# ── 連續色標版本：切到 RGB 空間後重新渲染輸出（影片模式也需要）──
 lutA.ColorSpace = "RGB"
 Render(renA)
 SaveScreenshot(OUT_INST_CONT, renA, ImageResolution=[SAVE_W, SAVE_H],
                OverrideColorPalette='WhiteBackground')
 log("Path A saved (continuous): " + OUT_INST_CONT)
+
+# ── Rainbow Desaturated 比較版本（step + continuous）──
+# 色階數統一：ApplyPreset 後重採樣到 33 個控制點，與 KEY_COLORS (build_rgb_points) 一致
+try: lutA.ApplyPreset('Rainbow Desaturated', True)
+except: pass
+try: lutA.RescaleTransferFunction(lo_A, hi_A)
+except: pass
+resample_lut_to_n_keys(lutA, 33, lo_A, hi_A)
+
+lutA.ColorSpace = "Step"
+Render(renA)
+SaveScreenshot(OUT_INST_RD, renA, ImageResolution=[SAVE_W, SAVE_H],
+               OverrideColorPalette='WhiteBackground')
+log("Path A saved (Rainbow Desaturated, step, 33 bands):       " + OUT_INST_RD)
+
+if not VIDEO_MODE:
+    lutA.ColorSpace = "RGB"
+    Render(renA)
+    SaveScreenshot(OUT_INST_RD_CONT, renA, ImageResolution=[SAVE_W, SAVE_H],
+                   OverrideColorPalette='WhiteBackground')
+    log("Path A saved (Rainbow Desaturated, continuous, 33 keys):  " + OUT_INST_RD_CONT)
+else:
+    log("Path A RD_cont skipped (video-mode)")
 
 Delete(renA)
 del renA
@@ -495,7 +619,9 @@ del renA
 # ═══════════════════════════════════════════════════════════════════
 # §5  Path B: U_mean + 平均流線（需要 U_mean AND W_mean）
 # ═══════════════════════════════════════════════════════════════════
-if has_Umean and has_Wmean:
+if VIDEO_MODE:
+    log("Path B/C/D skipped (video-mode)")
+elif has_Umean and has_Wmean:
     log("=== Path B: U_mean contour + mean velocity streamlines ===")
 
     sliceB = Slice(Input=reader)
@@ -517,6 +643,7 @@ if has_Umean and has_Wmean:
     dispB = Show(calcB, renB)
     dispB.Representation = "Surface"
     dispB.ColorArrayName = ["POINTS", "U_mean_display"]
+    flatten_display(dispB)
 
     lutB = GetColorTransferFunction("U_mean_display")
     infoB = calcB.GetDataInformation().GetPointDataInformation().GetArrayInformation("U_mean_display")
@@ -529,6 +656,7 @@ if has_Umean and has_Wmean:
 
     lutB.ColorSpace = "Step"
     lutB.RGBPoints = build_rgb_points(lo_B, hi_B, KEY_COLORS)
+    harden_lut(lutB)
     dispB.LookupTable = lutB
     dispB.SetScalarBarVisibility(renB, True)
     setup_scalar_bar(lutB, renB, r"$\langle u \rangle / U_{ref}$")
@@ -562,7 +690,9 @@ else:
 # ═══════════════════════════════════════════════════════════════════
 # §6  Path C: TKE（連續色標；若無統計資料則跳過）
 # ═══════════════════════════════════════════════════════════════════
-if has_TKE_computable:
+if VIDEO_MODE:
+    pass  # 略過 Path C (video-mode)
+elif has_TKE_computable:
     log("=== Path C: TKE (continuous colormap) ===")
 
     sliceC = Slice(Input=reader)
@@ -589,6 +719,7 @@ if has_TKE_computable:
     dispC = Show(calcC, renC)
     dispC.Representation = "Surface"
     dispC.ColorArrayName = ["POINTS", "TKE"]
+    flatten_display(dispC)
 
     lutC = GetColorTransferFunction("TKE")
     infoC = calcC.GetDataInformation().GetPointDataInformation().GetArrayInformation("TKE")
@@ -605,6 +736,7 @@ if has_TKE_computable:
     # TKE 預設連續色標
     lutC.ColorSpace = "RGB"
     lutC.RGBPoints = build_rgb_points(lo_C, hi_C, KEY_COLORS)
+    harden_lut(lutC)
     dispC.LookupTable = lutC
     dispC.SetScalarBarVisibility(renC, True)
     setup_scalar_bar(lutC, renC, r"$k/U_{ref}^{2}$")
@@ -633,7 +765,9 @@ else:
 #  ─ Threshold：Qmax * 5%，再依 20K-80K cells 自適應
 #  ─ 標註：上方置中 "Step=... | FTT=... | Ma_max=..." 文字
 #
-if has_velocity:
+if VIDEO_MODE:
+    pass  # 略過 Path D (video-mode)
+elif has_velocity:
     log("=== Path D: Q-criterion isosurface (Rainbow Desaturated, ref-aligned) ===")
 
     # ── Step 1: 計算 Q-criterion ──
@@ -670,8 +804,29 @@ if has_velocity:
     if q_range[1] <= 0.0:
         log("Path D skipped: Qmax <= 0, no vortex structure")
     else:
-        # ── Step 2: Q 等值面（自適應 threshold）──
-        Q_THRESHOLD = q_range[1] * Q_AUTO_FRACTION
+        # ── Step 2: Q 等值面 — 以「Q > threshold 覆蓋 50% 點數」決定 threshold ──
+        Q_THRESHOLD = q_range[1] * Q_AUTO_FRACTION  # fallback
+        try:
+            from paraview.servermanager import Fetch
+            q_fetched = Fetch(gradD)
+            q_arr = q_fetched.GetPointData().GetArray('Q') if q_fetched else None
+            if q_arr is not None:
+                npts = q_arr.GetNumberOfTuples()
+                # 升序排列，取第 (1 - coverage)*N 位 → 上方 coverage*N 個點滿足 Q > threshold
+                q_vals = sorted(q_arr.GetValue(i) for i in range(npts))
+                idx = int(npts * (1.0 - Q_COVERAGE))
+                idx = max(0, min(npts - 1, idx))
+                Q_THRESHOLD = q_vals[idx]
+                log("Q threshold @ %.0f%% coverage: %.8f  (npts=%d, rank=%d, Qmin=%.4g, Qmedian=%.4g, Qmax=%.4g)"
+                    % (Q_COVERAGE*100, Q_THRESHOLD, npts, idx,
+                       q_vals[0], q_vals[npts//2], q_vals[-1]))
+            else:
+                log("Q array not fetchable, fallback to Qmax*%.2f = %.8f"
+                    % (Q_AUTO_FRACTION, Q_THRESHOLD))
+        except Exception as _qe:
+            log("Q percentile fallback: %s -> Qmax*%.2f = %.8f"
+                % (str(_qe), Q_AUTO_FRACTION, Q_THRESHOLD))
+
         contourD = Contour(Input=gradD)
         contourD.ContourBy = ['POINTS', 'Q']
         contourD.Isosurfaces = [Q_THRESHOLD]
@@ -680,31 +835,7 @@ if has_velocity:
         contourD.UpdatePipeline()
 
         n_cells = contourD.GetDataInformation().GetNumberOfCells()
-        log("Initial Q threshold %.8f (%.1f%% of Qmax) -> %d cells"
-            % (Q_THRESHOLD, Q_AUTO_FRACTION*100, n_cells))
-
-        # 自適應目標區間 20K–80K cells（對齊參考範本）
-        if n_cells > Q_CELLS_TARGET_HI:
-            for fraction in [0.08, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50]:
-                Q_THRESHOLD = q_range[1] * fraction
-                contourD.Isosurfaces = [Q_THRESHOLD]
-                contourD.UpdatePipeline()
-                n_cells = contourD.GetDataInformation().GetNumberOfCells()
-                log("  ^ %.0f%% of Qmax = %.8f -> %d cells"
-                    % (fraction*100, Q_THRESHOLD, n_cells))
-                if n_cells <= Q_CELLS_TARGET_HI:
-                    break
-        elif n_cells < Q_CELLS_TARGET_LO and n_cells > 0:
-            for fraction in [0.03, 0.02, 0.01, 0.005, 0.002, 0.001]:
-                Q_THRESHOLD = q_range[1] * fraction
-                contourD.Isosurfaces = [Q_THRESHOLD]
-                contourD.UpdatePipeline()
-                n_cells = contourD.GetDataInformation().GetNumberOfCells()
-                log("  v %.2f%% of Qmax = %.8f -> %d cells"
-                    % (fraction*100, Q_THRESHOLD, n_cells))
-                if n_cells >= Q_CELLS_TARGET_LO:
-                    break
-        log("Final Q threshold: %.8f  (%d cells)" % (Q_THRESHOLD, n_cells))
+        log("Final Q threshold: %.8f  (%d iso cells)" % (Q_THRESHOLD, n_cells))
 
         # ── Step 3: 直接取 VTK 變數 w_inst，歸一化為 v/U_ref (normal wall velocity) ──
         # 座標慣例：Z = wall-normal，code w = v_physics；除以 U_ref 得到無因次 v/U_ref
