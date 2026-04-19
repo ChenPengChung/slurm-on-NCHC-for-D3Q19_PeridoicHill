@@ -235,8 +235,27 @@ log "RC=$RC → queuing chain round $NEXT_COUNT"
 MAX_SBATCH_RETRY=5
 SBATCH_RETRY_DELAY=30
 
+# 續鏈 exclude 名單（3 來源合併）：
+#   (A) Slurm 當下 sinfo -R       — 最新真實壞節點
+#   (B) .bad_nodes                — 本專案 fast-fail 自動累積
+#   (C) ~/.bad_nodes_global       — 跨專案個人黑名單（手動維護）
+LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd,)
+LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+EX_LIST=$(
+    { echo "$LIVE_BAD"; echo "$LOCAL_BAD"; echo "$GLOBAL_BAD"; } \
+        | tr ',' '\n' | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
+)
+EXCLUDE_ARG=""
+if [ -n "$EX_LIST" ]; then
+    EXCLUDE_ARG="--exclude=$EX_LIST"
+    log "Resubmit exclude (live+local+global): $EX_LIST"
+else
+    log "Resubmit exclude: (empty — cluster healthy)"
+fi
+
 for ATTEMPT in $(seq 1 $MAX_SBATCH_RETRY); do
-    NEXT_ID=$(sbatch --parsable jobscript_chain.slurm 2>&1)
+    NEXT_ID=$(sbatch --parsable $EXCLUDE_ARG jobscript_chain.slurm 2>&1)
     SBATCH_RC=$?
     if [ $SBATCH_RC -eq 0 ] && [[ "$NEXT_ID" =~ ^[0-9]+$ ]]; then
         log "Submitted next round: job=$NEXT_ID (attempt $ATTEMPT/$MAX_SBATCH_RETRY)"

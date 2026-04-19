@@ -145,7 +145,31 @@ else
     echo "[--no-clean] Preserving chain state for warm re-submit."
 fi
 
-sbatch jobscript_chain.slurm
+# ═══════════════════════════════════════════════════════════════════════════
+# [AUTO-EXCLUDE] 提交前查詢當下壞節點 (3 來源)，自動注入 --exclude=
+#   (A) sinfo -R                 - Slurm 當下標 drain/down/fail 的節點
+#   (B) ./.bad_nodes             - 本專案 fast-fail 歷史累積
+#   (C) ~/.bad_nodes_global      - 跨專案個人黑名單（選配）
+# 同時 export SBATCH_EXCLUDE → 即使您未來忘了用這隻 script，直接 sbatch 也有保底
+# ═══════════════════════════════════════════════════════════════════════════
+LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd,)
+LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+MERGED_BAD=$(
+    { echo "$LIVE_BAD"; echo "$LOCAL_BAD"; echo "$GLOBAL_BAD"; } \
+        | tr ',' '\n' | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
+)
+EXCLUDE_ARG=""
+if [ -n "$MERGED_BAD" ]; then
+    EXCLUDE_ARG="--exclude=$MERGED_BAD"
+    export SBATCH_EXCLUDE="$MERGED_BAD"
+    echo "[submit] 自動排除壞節點: $MERGED_BAD"
+    echo "         (sinfo -R: ${LIVE_BAD:-none}; .bad_nodes: ${LOCAL_BAD:-none}; global: ${GLOBAL_BAD:-none})"
+else
+    echo "[submit] 叢集健康，無需排除任何節點"
+fi
+
+sbatch $EXCLUDE_ARG jobscript_chain.slurm
 
 # Optional NaN monitor (only if script exists)
 if [ -f nan_monitor.py ]; then

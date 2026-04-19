@@ -12,8 +12,11 @@
 #SBATCH --open-mode=append
 # SIGUSR1 送達時間:walltime 結束前 120s,讓程式完成最終 checkpoint
 #SBATCH --signal=USR1@120
-# 2026-04-19: 25a-hgpn062 GPU 故障 (cudaError 46), 排除到 NCHC 修好為止
-#SBATCH --exclude=25a-hgpn062
+# 壞節點 exclude 改為「提交時動態注入」:
+#   (1) build_and_submit.sh 會自動查 sinfo -R + .bad_nodes + ~/.bad_nodes_global
+#       → 加 --exclude=... 到 sbatch 命令列
+#   (2) shell env var SBATCH_EXCLUDE 也會被 Slurm 自動讀取（雙保險）
+#   (3) 續鏈時（見文末 sbatch 區塊）會再查一次最新 sinfo -R
 #
 # ==============================================================================
 # jobscript_chain.slurm — 3.Re2800_129x257x129 自動續鏈 jobscript
@@ -264,16 +267,23 @@ log "RC=$RC → queuing chain round $NEXT_COUNT"
 MAX_SBATCH_RETRY=5
 SBATCH_RETRY_DELAY=30
 
-# 合併黑名單: #SBATCH 靜態種子 + .bad_nodes 動態加入的節點
-STATIC_EXCLUDE="25a-hgpn062"
+# 續鏈 exclude 名單（3 來源合併）：
+#   (A) Slurm 當下 sinfo -R       — 最新真實壞節點
+#   (B) .bad_nodes                — 本專案 fast-fail 自動累積
+#   (C) ~/.bad_nodes_global       — 跨專案個人黑名單（手動維護）
+LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd,)
+LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
 EX_LIST=$(
-    { echo "$STATIC_EXCLUDE"; cat .bad_nodes 2>/dev/null; } \
-        | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
+    { echo "$LIVE_BAD"; echo "$LOCAL_BAD"; echo "$GLOBAL_BAD"; } \
+        | tr ',' '\n' | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
 )
 EXCLUDE_ARG=""
 if [ -n "$EX_LIST" ]; then
     EXCLUDE_ARG="--exclude=$EX_LIST"
-    log "Resubmit exclude 名單: $EX_LIST"
+    log "Resubmit exclude (live+local+global): $EX_LIST"
+else
+    log "Resubmit exclude: (empty — cluster healthy)"
 fi
 
 for ATTEMPT in $(seq 1 $MAX_SBATCH_RETRY); do
