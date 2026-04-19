@@ -777,13 +777,56 @@ def scan_and_load_benchmarks(bench_dir, target_re):
 # 1. Load VTK (optional — benchmark-only mode if U_mean absent)
 # ================================================================
 HAS_VTK = False
-vtk_files = sorted(glob.glob(os.path.join(VTK_DIR, VTK_PATTERN)),
+vtk_files_all = sorted(glob.glob(os.path.join(VTK_DIR, VTK_PATTERN)),
                     key=lambda f: int(''.join(c for c in os.path.basename(f) if c.isdigit()) or '0'))
+
+# ─────────────────────────────────────────────────────────────────────
+# 自動從最新往舊找，第一個「完整」VTK 即停（跳過 0-byte / 截斷 / 缺區段）
+# 判定：檔案 >= 1 KB AND check_vtk_completeness() 通過
+# ─────────────────────────────────────────────────────────────────────
+MIN_VTK_BYTES = 1024   # < 1 KB 視為截斷
+latest_complete = None
+skipped_vtks = []
+for cand in reversed(vtk_files_all):
+    try:
+        sz = os.path.getsize(cand)
+    except OSError:
+        skipped_vtks.append((os.path.basename(cand), "getsize failed"))
+        continue
+    if sz < MIN_VTK_BYTES:
+        skipped_vtks.append((os.path.basename(cand), f"size={sz}B, 太小"))
+        continue
+    try:
+        ok, diag = check_vtk_completeness(cand)
+    except Exception as e:
+        skipped_vtks.append((os.path.basename(cand), f"讀檔錯誤: {e}"))
+        continue
+    if ok:
+        latest_complete = cand
+        break
+    # 抽 diag 最後一行「-> ...」當原因
+    reason_lines = [ln.strip() for ln in diag.split('\n')
+                    if ln.strip().startswith('->') or '缺少' in ln]
+    reason = reason_lines[0].lstrip('-> ').strip() if reason_lines else "不完整"
+    skipped_vtks.append((os.path.basename(cand), reason))
+
+if skipped_vtks:
+    print(f"[INFO] 跳過 {len(skipped_vtks)} 個不完整/截斷 VTK (從最新往舊找)：")
+    for name, reason in skipped_vtks[:5]:
+        print(f"       skip: {name}  ({reason})")
+    if len(skipped_vtks) > 5:
+        print(f"       ... 另 {len(skipped_vtks)-5} 個")
+
+vtk_files = [latest_complete] if latest_complete else []
+
 if not vtk_files:
-    print(f"[WARN] No VTK files matching '{VTK_PATTERN}' found — benchmark-only mode.")
+    if not vtk_files_all:
+        print(f"[WARN] No VTK files matching '{VTK_PATTERN}' found — benchmark-only mode.")
+    else:
+        print(f"[WARN] 全部 {len(vtk_files_all)} 個 VTK 都不完整 — benchmark-only mode.")
 else:
     vtk_path = vtk_files[-1]
-    print(f"[INFO] Loading VTK: {os.path.basename(vtk_path)}")
+    print(f"[INFO] Loading VTK: {os.path.basename(vtk_path)}  (latest COMPLETE)")
     dims, points, scalars = parse_vtk(vtk_path)
     nx, ny, nz = dims
     print(f"[INFO] Grid: {nx} x {ny} x {nz} = {nx*ny*nz} points")
