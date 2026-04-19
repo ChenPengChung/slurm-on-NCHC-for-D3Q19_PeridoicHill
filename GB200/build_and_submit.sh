@@ -152,9 +152,9 @@ fi
 #   (C) ~/.bad_nodes_global      - 跨專案個人黑名單（選配）
 # 同時 export SBATCH_EXCLUDE → 即使您未來忘了用這隻 script，直接 sbatch 也有保底
 # ═══════════════════════════════════════════════════════════════════════════
-LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd,)
-LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
-GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd, || true)
+LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd, || true)
+GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd, || true)
 MERGED_BAD=$(
     { echo "$LIVE_BAD"; echo "$LOCAL_BAD"; echo "$GLOBAL_BAD"; } \
         | tr ',' '\n' | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
