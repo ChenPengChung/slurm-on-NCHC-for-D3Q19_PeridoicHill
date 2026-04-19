@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=1.Re700_129x257x129
+#SBATCH --job-name=3.Re2800_129x257x129
 #SBATCH --account=MST114348
 #SBATCH --partition=dev
 #SBATCH --nodes=1
@@ -12,9 +12,11 @@
 #SBATCH --open-mode=append
 # SIGUSR1 送達時間:walltime 結束前 120s,讓程式完成最終 checkpoint
 #SBATCH --signal=USR1@120
+# 2026-04-19: 25a-hgpn062 GPU 故障 (cudaError 46), 排除到 NCHC 修好為止
+#SBATCH --exclude=25a-hgpn062
 #
 # ==============================================================================
-# jobscript_chain.slurm — 1.Re700_129x257x129 自動續鏈 jobscript
+# jobscript_chain.slurm — 3.Re2800_129x257x129 自動續鏈 jobscript
 #
 # Round 1      → ./a.out --cold
 # Round >= 2   → ./a.out --restart=checkpoint/step_<latest>
@@ -209,7 +211,34 @@ timeout --signal=USR1 --kill-after=${KILL_AFTER} ${TIMEOUT} \
 RC=$?
 END_TS=$(date +%s)
 ELAPSED=$((END_TS - START_TS))
-log "mpirun exit: RC=$RC  elapsed=${ELAPSED}s"
+log "mpirun exit: RC=$RC  elapsed=${ELAPSED}s  node=$SLURM_NODELIST"
+
+# ===== 5.5 Fast-fail 偵測 + 節點黑名單 =====
+# 判斷: mpirun 在 60s 內死掉, 且不是 walltime rescue (RC=124)
+#       → 極可能是節點 GPU/驅動故障 (如 cudaError 46)
+#       → 把節點加進 .bad_nodes, 下一輪 resubmit 自動 exclude
+if [ "$ELAPSED" -lt 60 ] && [ "$RC" -ne 0 ] && [ "$RC" -ne 124 ]; then
+    log "FAST-FAIL detected: $SLURM_NODELIST died in ${ELAPSED}s (RC=$RC)"
+    touch .bad_nodes
+    if ! grep -qxF "$SLURM_NODELIST" .bad_nodes; then
+        echo "$SLURM_NODELIST" >> .bad_nodes
+        log "Blacklisted $SLURM_NODELIST → .bad_nodes (共 $(wc -l < .bad_nodes) 個節點)"
+    else
+        log "$SLURM_NODELIST 已在 .bad_nodes 中 (Slurm 分配策略問題?)"
+    fi
+    # 連續 fast-fail 守門: 5 次 → 暫停鏈 (防 solver bug 誤判為節點問題)
+    FF=$(cat .fast_fail_count 2>/dev/null || echo 0)
+    FF=$((FF + 1))
+    echo "$FF" > .fast_fail_count
+    if [ "$FF" -ge 5 ]; then
+        log "FAST-FAIL GUARD: 連續 $FF 次 fast-fail. Chain 暫停等人檢查."
+        log "   恢復: rm .fast_fail_count; sbatch jobscript_chain.slurm"
+        touch STOP_CHAIN
+        exit 1
+    fi
+else
+    rm -f .fast_fail_count   # 正常跑滿 or walltime rescue → 清零計數
+fi
 
 # ===== 6. Exit code 判斷 + 續鏈決策 =====
 if [ "$RC" -eq 0 ]; then
@@ -235,8 +264,20 @@ log "RC=$RC → queuing chain round $NEXT_COUNT"
 MAX_SBATCH_RETRY=5
 SBATCH_RETRY_DELAY=30
 
+# 合併黑名單: #SBATCH 靜態種子 + .bad_nodes 動態加入的節點
+STATIC_EXCLUDE="25a-hgpn062"
+EX_LIST=$(
+    { echo "$STATIC_EXCLUDE"; cat .bad_nodes 2>/dev/null; } \
+        | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
+)
+EXCLUDE_ARG=""
+if [ -n "$EX_LIST" ]; then
+    EXCLUDE_ARG="--exclude=$EX_LIST"
+    log "Resubmit exclude 名單: $EX_LIST"
+fi
+
 for ATTEMPT in $(seq 1 $MAX_SBATCH_RETRY); do
-    NEXT_ID=$(sbatch --parsable jobscript_chain.slurm 2>&1)
+    NEXT_ID=$(sbatch --parsable $EXCLUDE_ARG jobscript_chain.slurm 2>&1)
     SBATCH_RC=$?
     if [ $SBATCH_RC -eq 0 ] && [[ "$NEXT_ID" =~ ^[0-9]+$ ]]; then
         log "Submitted next round: job=$NEXT_ID (attempt $ATTEMPT/$MAX_SBATCH_RETRY)"
