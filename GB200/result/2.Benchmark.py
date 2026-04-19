@@ -181,7 +181,7 @@ BENCH_MARKEVERY = 4
 BENCHMARK_SOURCES = {
     'LESOCC': {
         'dir_name':  'LESOCC (Breuer et al. 2009)',
-        'label':     r'DNS-$\mathit{LESOCC}$',
+        'label':     r'$\mathit{LESOCC}$-Breuer $\mathit{et\,al.}$',
         'delimiter': None,
         'color':     '#2255CC',   # blue
         'marker':    'o',         # circle  (body-fitted FVM family)
@@ -190,21 +190,31 @@ BENCHMARK_SOURCES = {
     },
     'MGLET': {
         'dir_name':  'MGLET (Breuer et al. 2009)',
-        'label':     r'DNS-$\mathit{MGLET}$',
+        'label':     r'$\mathit{MGLET}$-Breuer $\mathit{et\,al.}$',
         'delimiter': None,
         'color':     '#DAA520',   # yellow (goldenrod)
         'marker':    'D',         # diamond (body-fitted FVM family)
         'markersize': 3.5,
         'markevery':  4,
     },
+    'MGLET_Manhart': {
+        'dir_name':  'MGLET (Manhart et al. 2011)',
+        'label':     r'$\mathit{MGLET}$-Manhart $\mathit{et\,al.}$',
+        'delimiter': None,
+        'color':     '#DAA520',   # yellow (goldenrod) — same as MGLET family
+        'marker':    'D',         # diamond — same as MGLET family
+        'markersize': 3.5,
+        'markevery':  4,
+    },
     'Experiment': {
-        'dir_name':  'Experiment (Rapp & Manhart 2011)',
-        'label':     r'Exp. ($\mathit{Rapp}$ 2011)',
+        'dir_name':  'Exp. (Rapp et al. 2011)',
+        'label':     r'Exp.-Rapp $\mathit{et\,al.}$',
         'delimiter': ',',
-        'color':     '#BB1792',   # magenta/pink
-        'marker':    'o',         # circle  (experimental)
-        'markersize': 2.5,
+        'color':     '#228B22',   # green (forest green)
+        'marker':    '^',         # up-triangle  (experimental)
+        'markersize': 3.5,
         'markevery':  3,          # densest data → every 3rd pt
+        'filter_above_hill': True, # only draw points above hill surface
     },
     'LBM': {
         'dir_name':  'LBM',
@@ -277,11 +287,12 @@ print(f"[INFO] Re = {Re}  {'(laminar mode)' if LAMINAR else '(turbulent mode)'}"
 # 層流: 100% (全部顯示)
 # 紊流: 使用者選擇每個 benchmark 的顯示密度 (%)
 _DEFAULT_DENSITY = {
-    'LESOCC':     80,   # DNS — 中等密度
-    'MGLET':      80,   # DNS — 中等密度
-    'Experiment': 60,   # PIV 數據點多，預設較稀疏
-    'LBM':        100,  # 層流/少量數據點
-    'ISLBM':      100,  # 層流/少量數據點
+    'LESOCC':        80,   # DNS/LES — 中等密度
+    'MGLET':         80,   # DNS — 中等密度
+    'MGLET_Manhart': 80,   # LES — 中等密度
+    'Experiment':    60,   # PIV 數據點多，預設較稀疏
+    'LBM':           100,  # 層流/少量數據點
+    'ISLBM':         100,  # 層流/少量數據點
 }
 
 def subsample_uniform(y_arr, data_arr, density_pct):
@@ -454,87 +465,100 @@ def hill_function(Y):
 # VTK Parsing
 # ================================================================
 def parse_vtk(filepath):
-    """Read points, velocity, and scalar fields from ASCII STRUCTURED_GRID VTK."""
-    with open(filepath, "r") as f:
-        lines = f.readlines()
+    """Read points, velocity, and scalar fields from ASCII STRUCTURED_GRID VTK.
 
+    Streaming parser — reads line-by-line with numpy pre-allocation.
+    Avoids readlines() to keep memory usage ~O(npts) instead of O(file_size).
+    """
     dims = None
     npts = 0
     npts_from_dims = 0
-    points = []
+    points = np.empty((0, 3))
     scalars = {}
-    idx = 0
 
-    while idx < len(lines):
-        line = lines[idx].strip()
+    with open(filepath, "r") as f:
+        while True:
+            line = f.readline()
+            if not line:                       # EOF
+                break
+            sline = line.strip()
 
-        if line.startswith("DIMENSIONS"):
-            dims = tuple(int(v) for v in line.split()[1:4])
-            npts_from_dims = dims[0] * dims[1] * dims[2]
+            if sline.startswith("DIMENSIONS"):
+                dims = tuple(int(v) for v in sline.split()[1:4])
+                npts_from_dims = dims[0] * dims[1] * dims[2]
 
-        elif line.startswith("POINT_DATA"):
-            npts = int(line.split()[1])
+            elif sline.startswith("POINT_DATA"):
+                npts = int(sline.split()[1])
 
-        elif line.startswith("POINTS"):
-            npts = int(line.split()[1])
-            idx += 1
-            raw = []
-            while len(raw) < npts * 3 and idx < len(lines):
-                vals = lines[idx].strip().split()
-                if not vals or vals[0].startswith(("SCALARS", "VECTORS", "POINT_DATA")):
-                    break
-                raw.extend(float(v) for v in vals)
-                idx += 1
-            raw = raw[:npts * 3]
-            points = list(zip(raw[0::3], raw[1::3], raw[2::3]))
-            continue
+            elif sline.startswith("POINTS"):
+                n = int(sline.split()[1])
+                if npts == 0:
+                    npts = n
+                pts = np.empty(n * 3, dtype=np.float64)
+                pidx = 0
+                while pidx < n * 3:
+                    dline = f.readline()
+                    if not dline:
+                        break
+                    vals = dline.split()
+                    if not vals:
+                        continue
+                    if vals[0].startswith(("SCALARS", "VECTORS", "POINT_DATA")):
+                        break
+                    for v in vals:
+                        if pidx < n * 3:
+                            pts[pidx] = float(v)
+                            pidx += 1
+                points = pts[:pidx].reshape(-1, 3)
 
-        elif line.startswith("VECTORS"):
-            if npts == 0 and npts_from_dims > 0:
-                npts = npts_from_dims
-            parts = line.split()
-            vec_name = parts[1] if len(parts) > 1 else "velocity"
-            idx += 1
-            raw_vec = []
-            while len(raw_vec) < npts * 3 and idx < len(lines):
-                vals = lines[idx].strip().split()
-                if not vals or vals[0].startswith(("SCALARS", "VECTORS", "POINT_DATA")):
-                    break
-                raw_vec.extend(float(v) for v in vals)
-                idx += 1
-            raw_vec = raw_vec[:npts * 3]
-            if len(raw_vec) == npts * 3:
-                arr = np.array(raw_vec)
-                scalars[f"{vec_name}_x"] = arr[0::3]
-                scalars[f"{vec_name}_y"] = arr[1::3]
-                scalars[f"{vec_name}_z"] = arr[2::3]
-            continue
+            elif sline.startswith("VECTORS"):
+                if npts == 0 and npts_from_dims > 0:
+                    npts = npts_from_dims
+                parts = sline.split()
+                vec_name = parts[1] if len(parts) > 1 else "velocity"
+                vec = np.empty(npts * 3, dtype=np.float64)
+                vidx = 0
+                while vidx < npts * 3:
+                    dline = f.readline()
+                    if not dline:
+                        break
+                    vals = dline.split()
+                    if not vals:
+                        continue
+                    if vals[0].startswith(("SCALARS", "VECTORS", "POINT_DATA")):
+                        break
+                    for v in vals:
+                        if vidx < npts * 3:
+                            vec[vidx] = float(v)
+                            vidx += 1
+                if vidx == npts * 3:
+                    scalars[f"{vec_name}_x"] = vec[0::3].copy()
+                    scalars[f"{vec_name}_y"] = vec[1::3].copy()
+                    scalars[f"{vec_name}_z"] = vec[2::3].copy()
 
-        elif line.startswith("SCALARS"):
-            if npts == 0 and npts_from_dims > 0:
-                npts = npts_from_dims
-            parts = line.split()
-            current_scalar = parts[1]
-            scalars[current_scalar] = []
-            idx += 1  # skip LOOKUP_TABLE line
-            idx += 1
-            count = 0
-            while count < npts and idx < len(lines):
-                vals = lines[idx].strip().split()
-                if not vals or vals[0].startswith("SCALARS") or vals[0].startswith("VECTORS"):
-                    break
-                for v in vals:
-                    if count < npts:
-                        scalars[current_scalar].append(float(v))
-                        count += 1
-                idx += 1
-            continue
+            elif sline.startswith("SCALARS"):
+                if npts == 0 and npts_from_dims > 0:
+                    npts = npts_from_dims
+                parts = sline.split()
+                name = parts[1]
+                f.readline()           # skip LOOKUP_TABLE line
+                arr = np.empty(npts, dtype=np.float64)
+                count = 0
+                while count < npts:
+                    dline = f.readline()
+                    if not dline:
+                        break
+                    vals = dline.split()
+                    if not vals:
+                        continue
+                    if vals[0].startswith(("SCALARS", "VECTORS")):
+                        break
+                    for v in vals:
+                        if count < npts:
+                            arr[count] = float(v)
+                            count += 1
+                scalars[name] = arr[:count]
 
-        idx += 1
-
-    points = np.array(points)
-    for key in scalars:
-        scalars[key] = np.array(scalars[key])
     return dims, points, scalars
 
 
@@ -793,9 +817,9 @@ else:
             # Support both naming conventions:
             #   fileIO.h Edit11+: "uu", "uw", "ww"
             #   older fileIO.h:   "uu_RS", "uw_RS", "ww_RS"
-            uu_RS_3d  = scalars.get("uu_RS") or scalars.get("uu")
-            uw_RS_3d  = scalars.get("uw_RS") or scalars.get("uw")
-            ww_RS_3d  = scalars.get("ww_RS") or scalars.get("ww")
+            uu_RS_3d  = scalars["uu_RS"] if "uu_RS" in scalars else scalars.get("uu")
+            uw_RS_3d  = scalars["uw_RS"] if "uw_RS" in scalars else scalars.get("uw")
+            ww_RS_3d  = scalars["ww_RS"] if "ww_RS" in scalars else scalars.get("ww")
             k_TKE_3d  = scalars.get("k_TKE")
 
         if W_mean_3d is not None: W_mean_3d = W_mean_3d.reshape(nz, ny, nx)
@@ -1283,7 +1307,8 @@ def _scale_tag(scale):
 # ════════════════════════════════════════════════════════════════════
 #  Hill-interior legend box + offset profile plotter
 # ════════════════════════════════════════════════════════════════════
-def _place_hill_legend(ax, field_label, scale, Re_val):
+def _place_hill_legend(ax, field_label, scale, Re_val, legend_pos='bottom-left',
+                       field_bench=None):
     """Place a journal-quality legend box inside the hill region.
 
     Strategy — "font first, box adapts":
@@ -1296,6 +1321,8 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
       Row 1:  <variable>  |  Re = <value>      — italic, CENTRED in box
       Row 2+: [sample] Label                    — normal, left-aligned
               ALL label first-letters vertically aligned.
+
+    legend_pos : 'bottom-left' (default, inside hill) or 'top-right' (upper-right corner)
     """
     from matplotlib.patches import FancyBboxPatch
 
@@ -1306,25 +1333,39 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
     #         SAME math-mode font size — no mixed plain/math shrinkage.
     #   field_label is a LaTeX fragment WITHOUT outer $...$
     #   e.g. r"\langle u \rangle / u_B"
-    row1_str = r'$' + field_label + r' \;\; | \;\; Re = ' + str(Re_val) + r'$'
+    # (Header row removed — space redistributed to entry rows)
 
     legend_entries = []   # (type, label, color, marker_char)
     if HAS_VTK:
         # GILBM = our own code, keep plain (non-italic) text
         legend_entries.append(('line', 'GILBM', c_sim, None))
-    for _, info, _ in bench_sources:
+    for _, info, bdata in bench_sources:
+        # Only include benchmark sources that have data for the current field
+        if field_bench is not None:
+            has_field = any(xh_data.get(field_bench) is not None
+                           for xh_data in bdata.values())
+            if not has_field:
+                continue
         # Benchmark labels already contain LaTeX $\mathit{...}$ from BENCHMARK_SOURCES
         legend_entries.append(('marker', info['label'], info['color'],
                                info['marker']))
-    n_rows = 1 + len(legend_entries)
-    if n_rows < 2:
+    n_rows = len(legend_entries)
+    if n_rows < 1:
         return  # nothing to draw
 
-    # ── Maximum allowed region (hill constraint) ──
+    # ── Maximum allowed region ──
     hill_at_right = float(hill_function(np.array([0.5]))[0])  # ≈ 0.857
-    MAX_Y1 = hill_at_right - 0.03   # leave tiny gap below hill slope
-    MAX_X0 = -1.0
-    MAX_Y0 = 0.0
+    TOP_RIGHT = (legend_pos == 'top-right')
+    if TOP_RIGHT:
+        # Place box flush against top-right corner of axes frame
+        ylim_ax = ax.get_ylim()
+        MAX_Y1 = ylim_ax[1]          # flush with top edge
+        MAX_Y0 = ylim_ax[1] - (hill_at_right - 0.02)  # same height as hill-based box
+        MAX_X0 = None                 # computed later (flush right)
+    else:
+        MAX_Y1 = hill_at_right - 0.02   # tight gap below hill slope
+        MAX_X0 = -1.0
+        MAX_Y0 = 0.0
 
     # ── Step 1: determine max fontsize from axes height ──
     fig_h_inch = fig.get_size_inches()[1]
@@ -1335,12 +1376,12 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
     # Target: each row occupies ~(MAX_Y1 - MAX_Y0) / n_rows in data coords
     row_h_data = (MAX_Y1 - MAX_Y0) / n_rows
     row_h_inch = (row_h_data / yr) * axes_h_inch
-    fontsize = max(8.0, min(row_h_inch * 72 * 0.75, 18.0))
+    fontsize = max(8.0, min(row_h_inch * 72 * 0.80, 18.0))
 
     # ── Layout constants (data-coord offsets relative to box left) ──
-    PAD = 0.04            # internal padding around text content
-    SAMPLE_W = 0.22       # width reserved for line/marker sample column
-    SAMPLE_GAP = 0.06     # gap between sample and label text
+    PAD = 0.03            # internal padding around text content
+    SAMPLE_W = 0.18       # width reserved for line/marker sample column
+    SAMPLE_GAP = 0.05     # gap between sample and label text
 
     # ── Helper: place all rows, measure, return objects + bounds ──
     def _try_layout(fs):
@@ -1365,24 +1406,11 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
         def ry(i):
             return by1 - PAD - row_h_d * (i + 0.5)
 
-        # Temporary x positions for measurement
-        # Row 1: will be centred later; place at x=0 for now
-        # (contains LaTeX $...$ — math mode handles italic automatically)
-        t1 = ax.text(
-            0, ry(0), row1_str,
-            fontsize=fs, fontfamily='serif',
-            fontweight='normal',
-            verticalalignment='center', horizontalalignment='center',
-            zorder=11, transform=ax.transData,
-        )
-        texts.append(t1)
-
-        # x_label: left edge of sample + SAMPLE_W + SAMPLE_GAP
-        # We'll compute x_label from box x0 later; place labels at x=0 for measure
+        # Place entry labels at x=0 for measurement
         label_texts = []
         for j, (etype, label, color, mkr) in enumerate(legend_entries):
             t = ax.text(
-                0, ry(1 + j), label,
+                0, ry(j), label,
                 fontsize=fs, fontfamily='serif',
                 fontstyle='normal', fontweight='normal',
                 verticalalignment='center', horizontalalignment='left',
@@ -1401,22 +1429,26 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
             bb_d = bb.transformed(ax.transData.inverted())
             return bb_d.x1 - bb_d.x0
 
-        w_row1 = text_w(t1)
         max_label_w = max((text_w(t) for t in label_texts), default=0)
 
-        # Content width = max of (row1, sample_col + gap + longest_label)
-        data_row_w = SAMPLE_W + SAMPLE_GAP + max_label_w
-        content_w = max(w_row1, data_row_w)
+        # Content width = sample_col + gap + longest_label
+        content_w = SAMPLE_W + SAMPLE_GAP + max_label_w
 
         # Box bounds
-        bx0 = MAX_X0
-        bx1 = bx0 + content_w + 2 * PAD
+        box_w = content_w + 2 * PAD
+        if TOP_RIGHT:
+            xlim_cur = ax.get_xlim()
+            bx1 = xlim_cur[1]         # flush with right edge
+            bx0 = bx1 - box_w
+        else:
+            bx0 = MAX_X0
+            bx1 = bx0 + box_w
 
         # Remove temporary texts
         for t in texts:
             t.remove()
 
-        return bx0, bx1, by0, by1, ry, fs, content_w, w_row1
+        return bx0, bx1, by0, by1, ry, fs, content_w
 
     # ── Step 2: iterate — shrink font if box exceeds hill ──
     bx0 = bx1 = by0 = by1 = 0
@@ -1424,14 +1456,17 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
     try:
         fig.canvas.draw()
         for _attempt in range(20):
-            bx0, bx1, by0, by1, ry_func, fs, cw, w1 = _try_layout(fontsize)
+            bx0, bx1, by0, by1, ry_func, fs, cw = _try_layout(fontsize)
             # Check if box top exceeds hill slope anywhere along box width
-            check_xs = np.linspace(max(bx0, 0), max(bx1, 0), 10)
-            check_xs = check_xs[check_xs >= 0]  # hill only defined for x >= 0
-            if len(check_xs) > 0:
-                hill_min = float(np.min(hill_function(check_xs)))
-                if by1 > hill_min - 0.02:
-                    by1 = hill_min - 0.02
+            # (skip for top-right — no hill constraint there)
+            if not TOP_RIGHT:
+                check_xs = np.linspace(max(bx0, 0), max(bx1, 0), 10)
+                check_xs = check_xs[check_xs >= 0]  # hill only defined for x >= 0
+                if len(check_xs) > 0:
+                    hill_min = float(np.min(hill_function(check_xs)))
+                    if by1 > hill_min - 0.02:
+                        by1 = hill_min - 0.02
+
             if by1 - by0 < 0.15 or fontsize <= 7:
                 break
             # Recheck if content fits vertically
@@ -1468,22 +1503,11 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
     x_sample_right  = x_sample_left + SAMPLE_W
     x_sample_center = (x_sample_left + x_sample_right) / 2.0
     x_label         = x_sample_right + SAMPLE_GAP
-    x_center        = (bx0 + bx1) / 2.0     # for centred Row 1
+    # ── Step 4: place final content (no header row) ──
 
-    # ── Step 4: place final content ──
-
-    # Row 1: centred — LaTeX math handles italic for variables & Re
-    ax.text(
-        x_center, row_y_final(0), row1_str,
-        fontsize=fontsize, fontfamily='serif',
-        fontweight='normal',
-        verticalalignment='center', horizontalalignment='center',
-        zorder=11, transform=ax.transData,
-    )
-
-    # Rows 2+: sample + label, ALL labels at x_label (aligned)
+    # Entry rows: sample + label, ALL labels at x_label (aligned)
     for j, (etype, label, color, mkr) in enumerate(legend_entries):
-        ry = row_y_final(1 + j)
+        ry = row_y_final(j)
 
         if etype == 'line':
             ax.plot(
@@ -1514,7 +1538,8 @@ def _place_hill_legend(ax, field_label, scale, Re_val):
 def plot_offset_panel(ax, field_sim, field_bench, scale,
                       field_label, Re_val,
                       xlabel=r"$x/H$ [-]",
-                      xlim_range=None):
+                      xlim_range=None,
+                      legend_pos='bottom-left'):
     """Offset-profile plotter — publication-quality (NO title).
 
     field_label : str  — variable name for the legend box header
@@ -1547,6 +1572,18 @@ def plot_offset_panel(ax, field_sim, field_bench, scale,
                 if density_pct <= 0:
                     continue  # 0% = 不顯示此來源
                 z_sub, d_sub = subsample_uniform(z_b, d_b, density_pct)
+
+                # ── Hill filter: only keep points above hill surface ──
+                if info.get('filter_above_hill', False):
+                    xh_physical = xh * H_HILL          # x in physical coords
+                    z_hill = float(hill_function(np.array([xh_physical]))[0])
+                    z_hill_norm = z_hill / H_HILL       # normalised y/H
+                    mask = z_sub > z_hill_norm + 0.01   # small margin above hill
+                    z_sub = z_sub[mask]
+                    d_sub = d_sub[mask]
+                    if len(z_sub) == 0:
+                        continue
+
                 ax.plot(d_sub * scale + xh, z_sub,
                         linestyle='none',
                         marker=info['marker'],
@@ -1580,8 +1617,9 @@ def plot_offset_panel(ax, field_sim, field_bench, scale,
     ax.set_ylabel(r"$y/H$ [-]", fontsize=9)
     ax.tick_params(labelsize=8)
 
-    # ── Legend box inside hill region ──
-    _place_hill_legend(ax, field_label, scale, Re_val)
+    # ── Legend box ──
+    _place_hill_legend(ax, field_label, scale, Re_val, legend_pos=legend_pos,
+                       field_bench=field_bench)
 
 
 def compute_offset_extent(field_sim, field_bench, scale, padding=0.3):
@@ -1642,29 +1680,30 @@ FIG_SIZE = (10, 4)
 FIG_DPI = 300
 
 # ── Figure definition table ──
-# (field_sim, field_bench, scale_key, default_scale, field_label, filename, turbulent_only)
+# (field_sim, field_bench, scale_key, default_scale, field_label, filename,
+#  turbulent_only, xlim_override, legend_pos)
 # field_label_inner: LaTeX fragment WITHOUT outer $...$, used to build
 #   a single unified math string for the legend header row.
 #   ⟨ ⟩ notation for mean quantities; prime for fluctuations.
 _FIGURE_DEFS = [
     ("U",  "U",  "U",  0.8,
      r"\langle u \rangle / u_B" if not LAMINAR else r"U / U_{ref}",
-     "fig_mean_u.png", False),
+     "fig_mean_u.png", False, None, 'bottom-left'),
     ("W",  "V",  "W",  0.8,
      r"\langle v \rangle / u_B" if not LAMINAR else r"V / U_{ref}",
-     "fig_mean_v.png", False),
+     "fig_mean_v.png", False, None, 'bottom-left'),
     ("uu", "uu", "uu", 30,
      r"\langle u'u' \rangle / u_B^2",
-     "fig_uu.png", True),
+     "fig_uu.png", True, None, 'bottom-left'),
     ("ww", "vv", "ww", 30,
      r"\langle v'v' \rangle / u_B^2",
-     "fig_vv.png", True),
+     "fig_vv.png", True, None, 'bottom-left'),
     ("uw", "uv", "uw", 60,
      r"\langle u'v' \rangle / u_B^2",
-     "fig_uv.png", True),
+     "fig_uv.png", True, (-1.5, 10), 'top-right'),
     ("k",  "k",  "k",  20,
      r"k / u_B^2",
-     "fig_k.png", True),
+     "fig_k.png", True, None, 'bottom-left'),
 ]
 
 # ── Helper: check if ANY benchmark source has data for a given bench field ──
@@ -1708,7 +1747,7 @@ print(f"{'='*60}")
 
 # ── Pre-scan: report benchmark variable availability ──
 print(f"\n  Variable availability for Re={Re}:")
-for fs, fb, sk, default_sc, fl, fname, turb_only in _FIGURE_DEFS:
+for fs, fb, sk, default_sc, fl, fname, turb_only, xlim_ov, leg_pos in _FIGURE_DEFS:
     if turb_only and LAMINAR:
         continue
     sim_has = HAS_VTK and (not turb_only or HAS_RS)
@@ -1723,48 +1762,44 @@ print()
 n_generated = 0
 n_skipped = 0
 
-for fs, fb, sk, default_sc, fl, fname, turb_only in _FIGURE_DEFS:
+for fs, fb, sk, default_sc, fl, fname, turb_only, xlim_ov, leg_pos in _FIGURE_DEFS:
     # Skip turbulent-only figures in laminar mode
     if turb_only and LAMINAR:
         continue
 
-    # ── NEW LOGIC: skip ONLY if NEITHER VTK NOR any benchmark has this variable ──
+    # ── Skip if no benchmark source has data for this variable ──
     sim_has_field = HAS_VTK and (not turb_only or HAS_RS)
     bench_has_field = _any_bench_has_field(fb)
 
-    if not sim_has_field and not bench_has_field:
-        print(f"  [SKIP] {fname} — no VTK data and no benchmark data for '{fb}'")
+    if not bench_has_field:
+        print(f"  [SKIP] {fname} — no benchmark data for '{fb}' at Re={Re}")
         n_skipped += 1
         continue
 
     sc = FIELD_PLOT_SCALE.get(sk, default_sc)
     fig, ax = plt.subplots(figsize=FIG_SIZE)
+    # Use per-figure xlim override if defined, else global
+    xlim_use = xlim_ov if xlim_ov is not None else xlim_plot
     plot_offset_panel(ax, fs, fb, scale=sc,
                       field_label=fl, Re_val=Re,
-                      xlabel=r"$x/H$ [-]", xlim_range=xlim_plot)
+                      xlabel=r"$x/H$ [-]", xlim_range=xlim_use,
+                      legend_pos=leg_pos)
 
-    # ── Annotation: note which data sources are present/missing ──
-    anno_parts = []
-    if not sim_has_field:
-        anno_parts.append("VTK: no data for this variable")
-    missing_benches = _bench_sources_missing_field(fb)
-    for mb_label in missing_benches:
-        anno_parts.append(f"{mb_label}: no benchmark for this variable")
-
-    if anno_parts:
-        anno_text = "; ".join(anno_parts)
-        ax.annotate(
-            anno_text,
-            xy=(0.5, 0.01), xycoords='axes fraction',
-            fontsize=6.5, color='#666666', fontstyle='italic',
-            ha='center', va='bottom',
-            bbox=dict(boxstyle='round,pad=0.3', fc='#FFFDE7', ec='#CCCCCC',
-                      lw=0.5, alpha=0.9),
-            zorder=20,
-        )
+    # ── Top-left info label: variable | Re | ×scale ──
+    info_str = r'$' + fl + r'$' + f'  |  Re = {Re}  |  ' + r'$\times\,$' + f'{sc:g}'
+    ax.text(
+        0.01, 0.98, info_str,
+        fontsize=8, fontfamily='serif',
+        verticalalignment='top', horizontalalignment='left',
+        transform=ax.transAxes,
+        zorder=50,
+        bbox=dict(facecolor='white', edgecolor='none', alpha=0.85, pad=1.5),
+    )
 
     fig.tight_layout()
-    outpath = os.path.join(SCRIPT_DIR, fname)
+    _fig_outdir = os.environ.get('BENCHMARK_OUTDIR', SCRIPT_DIR)
+    outpath = os.path.join(_fig_outdir, fname)
+    os.makedirs(_fig_outdir, exist_ok=True)
     fig.savefig(outpath, dpi=FIG_DPI, bbox_inches="tight")
     n_generated += 1
 
@@ -1773,15 +1808,16 @@ for fs, fb, sk, default_sc, fl, fname, turb_only in _FIGURE_DEFS:
     if sim_has_field:
         status_parts.append("VTK")
     present_benches = _bench_sources_present_field(fb)
+    missing_benches = _bench_sources_missing_field(fb)
     if present_benches:
         status_parts.append(f"Bench:[{','.join(present_benches)}]")
-    if missing_benches:
-        status_parts.append(f"NoBench:[{','.join(missing_benches)}]")
     print(f"  [OK] {fname}  ({' + '.join(status_parts)})")
+    if missing_benches:
+        for mb_label in missing_benches:
+            print(f"        [INFO] {mb_label}: no benchmark for '{fb}' at Re={Re}")
     plt.close(fig)
 
 print(f"\n  Generated: {n_generated} figures, Skipped: {n_skipped}")
 
 if LAMINAR:
     print("[INFO] Laminar mode — RS figures skipped.")
-
