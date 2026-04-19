@@ -231,10 +231,18 @@ bool g_timing_sample = false;
 #include "fileIO.h"
 #include "MRT_Matrix.h"
 #include "MRT_Process.h"
-// ── Animation 自動渲染參數（可自由調整）──
-#define ANIM_ENABLE       0     // 總開關：1=啟用動畫輸出, 0=完全關閉
-#define ANIM_EVERY_N_VTK  1     // 每 N 次 VTK 輸出渲染一幀（1=每次, 2=隔一次, 3=每三次...）
-#define ANIM_FPS          1     // MP4 播放幀率 (frames per second)
+// -- Animation auto-render params --
+// New pipeline: per VTK -> pipeline.py (background) -> 2x 4K GIFs incremental append
+//   animation/flow_cont.gif  - KEY_COLORS continuous
+//   animation/flow_RD.gif    - Rainbow Desaturated step 33
+//   PNG auto-cleaned after each step (saves disk)
+//   .state.json tracks added step for resume safety
+#define ANIM_ENABLE        1      // master switch: 1=on, 0=off
+#define ANIM_EVERY_N_VTK   1      // render 1 frame per N VTK output
+#define ANIM_FPS           4      // GIF playback fps
+#define ANIM_WIDTH         3840   // GIF width px (3840=4K, auto height)
+#define ANIM_MAX_FRAMES    10000  // rolling window cap
+#define ANIM_REBUILD_EVERY 50     // palette rebuild interval
 #include "animation/gif_snapshot.h"
 
 int main(int argc, char *argv[])
@@ -1676,7 +1684,7 @@ int main(int argc, char *argv[])
 
             fileIO_velocity_vtk_merged( step );
 
-            // ===== Animation: render PNG + rebuild MP4 (background) =====
+            // ===== Animation: pipeline.py render PNG + append to 2 GIFs (background) =====
             AnimRenderAndRebuild( step );
 
             // Binary checkpoint (every NDTBIN steps, piggyback on VTK's SendDataToCPU)
@@ -1805,7 +1813,7 @@ int main(int argc, char *argv[])
         fileIO_velocity_vtk_merged( step );
         SaveBinaryCheckpoint( step );     // binary checkpoint (f^neq + tavg + RS + metadata)
 
-        // ===== Animation: final MP4 assembly (blocking) =====
+        // ===== Animation: final GIF append (blocking, wait background tasks) =====
         AnimFinalize( step );
 
         // Write merged statistics to ./statistics/ (backward compat for Python analysis scripts)
