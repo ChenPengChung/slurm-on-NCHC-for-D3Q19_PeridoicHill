@@ -82,6 +82,52 @@ if [ ! -x ./a.out ]; then
     exit 1
 fi
 
+# ===== 3.5 節點健康預檢 (首次手動 sbatch 也會走這裡) =====
+# 若當前分配到已知壞節點 (live sinfo / .bad_nodes / ~/.bad_nodes_global),
+# 不跑 mpirun, 直接以 --exclude requeue 換節點. 避免:
+#   (a) 撞到歷史上 fast-fail 過的節點, 浪費啟動時間
+#   (b) 第一次手動 sbatch 沒經 build_and_submit.sh 的 --exclude 注入
+# 注: 此階段不累計 .fast_fail_count (非 solver fast-fail)
+PRE_LOCAL_BAD=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$')
+PRE_GLOBAL_BAD=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$')
+PRE_LIVE_BAD=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u)
+PRE_BAD_ALL=$(printf '%s\n%s\n%s\n' "$PRE_LOCAL_BAD" "$PRE_GLOBAL_BAD" "$PRE_LIVE_BAD" \
+              | grep -v '^[[:space:]]*$' | sort -u)
+
+CURRENT_NODES=$(scontrol show hostnames "$SLURM_NODELIST" 2>/dev/null)
+MATCHED_BAD=""
+for node in $CURRENT_NODES; do
+    if echo "$PRE_BAD_ALL" | grep -qxF "$node"; then
+        MATCHED_BAD="$MATCHED_BAD $node"
+    fi
+done
+
+if [ -n "$MATCHED_BAD" ]; then
+    log "PRE-FLIGHT BAD NODE detected:$MATCHED_BAD -> requeue without running mpirun"
+    touch .bad_nodes
+    for node in $MATCHED_BAD; do
+        grep -qxF "$node" .bad_nodes || echo "$node" >> .bad_nodes
+    done
+    LIVE_BAD_C=$(sinfo -h -R -o "%n" 2>/dev/null | sort -u | paste -sd,)
+    LOCAL_BAD_C=$(cat .bad_nodes 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+    GLOBAL_BAD_C=$(cat ~/.bad_nodes_global 2>/dev/null | grep -v '^[[:space:]]*$' | paste -sd,)
+    EX_LIST=$(
+        { echo "$LIVE_BAD_C"; echo "$LOCAL_BAD_C"; echo "$GLOBAL_BAD_C"; } \
+            | tr ',' '\n' | grep -v '^[[:space:]]*$' | sort -u | paste -sd,
+    )
+    EXCLUDE_ARG=""
+    [ -n "$EX_LIST" ] && EXCLUDE_ARG="--exclude=$EX_LIST"
+    log "Pre-flight requeue exclude: ${EX_LIST:-(empty)}"
+    NEXT_ID=$(sbatch --parsable $EXCLUDE_ARG jobscript_chain.slurm 2>&1)
+    if [[ "$NEXT_ID" =~ ^[0-9]+$ ]]; then
+        log "Pre-flight requeued: job=$NEXT_ID"
+        exit 0
+    else
+        log "FATAL: pre-flight requeue failed: $NEXT_ID"
+        exit 1
+    fi
+fi
+
 # ===== 4. Checkpoint 驗證 =====
 NP=${SLURM_NTASKS:-8}
 
