@@ -75,7 +75,7 @@ if ! command -v ffmpeg >/dev/null 2>&1; then
 fi
 
 # ===== 2. Restart 上限 =====
-MAX_RESTARTS=100
+MAX_RESTARTS=500
 if [ "$CHAIN_COUNT" -gt "$MAX_RESTARTS" ]; then
     log "ABORT: chain count $CHAIN_COUNT > MAX_RESTARTS=$MAX_RESTARTS. Chain stops."
     exit 0
