@@ -184,6 +184,17 @@ validate_checkpoint() {
 
 ARGS=""
 if [ "$CHAIN_COUNT" -eq 1 ]; then
+    # ---- Cold-start 安全閘 ----
+    # 防誤觸: chain_count=1 但 checkpoint/ 已有資料 -> 拒絕冷啟動 (會覆寫 checkrho.dat 等)
+    # 明確從頭跑時: export LBM_ALLOW_COLD_START=1
+    HAS_CKPT=$(ls -1d checkpoint/step_*/ 2>/dev/null | head -1)
+    if [ -n "$HAS_CKPT" ] && [ "${LBM_ALLOW_COLD_START:-0}" != "1" ]; then
+        log "FATAL: chain_count=1 但 checkpoint/ 已有資料 ($HAS_CKPT)"
+        log "       拒絕冷啟動以防 checkrho.dat / Ustar_Force_record.dat 被覆寫"
+        log "       -> 續跑: echo <round> > .chain_count; sbatch jobscript_chain.slurm"
+        log "       -> 確定從頭跑: export LBM_ALLOW_COLD_START=1; sbatch jobscript_chain.slurm"
+        exit 1
+    fi
     ARGS="--cold"
     log "Round 1 → ARGS=\"$ARGS\""
 else
