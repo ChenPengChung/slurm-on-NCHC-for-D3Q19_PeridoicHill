@@ -266,7 +266,46 @@ timeout --signal=USR1 --kill-after=${KILL_AFTER} ${TIMEOUT} \
 RC=$?
 END_TS=$(date +%s)
 ELAPSED=$((END_TS - START_TS))
-log "mpirun exit: RC=$RC  elapsed=${ELAPSED}s"
+log "mpirun exit: RC=$RC  elapsed=${ELAPSED}s  nodes=$SLURM_NODELIST"
+
+# ===== 5.5 Fast-fail 偵測 + 節點黑名單 (GB200 multi-node 版) =====
+# 判斷: mpirun 在 60s 內死掉, 且不是 walltime rescue (RC=124)
+#       → 極可能是節點 GPU/驅動故障 (如 cudaError 46)
+#       → 把本輪用到的所有節點都加進 .bad_nodes (2 節點無法分辨哪顆壞, 全拉黑最穩)
+#       → 下一輪 resubmit 自動 exclude
+if [ "$ELAPSED" -lt 60 ] && [ "$RC" -ne 0 ] && [ "$RC" -ne 124 ]; then
+    log "FAST-FAIL detected: $SLURM_NODELIST died in ${ELAPSED}s (RC=$RC)"
+    # 把 bracket 格式 (如 25a-ggpn[21-22]) 展開為個別 hostname
+    HOSTS=$(scontrol show hostnames "$SLURM_NODELIST" 2>/dev/null)
+    if [ -z "$HOSTS" ]; then
+        # fallback: 直接寫 $SLURM_NODELIST (單節點或 scontrol 不可用時)
+        HOSTS="$SLURM_NODELIST"
+    fi
+    touch .bad_nodes
+    ADDED=0
+    while IFS= read -r h; do
+        [ -z "$h" ] && continue
+        if ! grep -qxF "$h" .bad_nodes; then
+            echo "$h" >> .bad_nodes
+            ADDED=$((ADDED + 1))
+            log "Blacklisted $h → .bad_nodes"
+        fi
+    done <<< "$HOSTS"
+    TOTAL=$(wc -l < .bad_nodes)
+    log "本輪新增 $ADDED 個節點, 黑名單共 $TOTAL 個"
+    # 連續 fast-fail 守門: 5 次 → 暫停鏈 (防 solver bug 誤判為節點問題)
+    FF=$(cat .fast_fail_count 2>/dev/null || echo 0)
+    FF=$((FF + 1))
+    echo "$FF" > .fast_fail_count
+    if [ "$FF" -ge 5 ]; then
+        log "FAST-FAIL GUARD: 連續 $FF 次 fast-fail. Chain 暫停等人檢查."
+        log "   恢復: rm .fast_fail_count; sbatch jobscript_chain.slurm"
+        touch STOP_CHAIN
+        exit 1
+    fi
+else
+    rm -f .fast_fail_count   # 正常跑滿 or walltime rescue → 清零計數
+fi
 
 # ===== 6. Exit code 判斷 + 續鏈決策 =====
 if [ "$RC" -eq 0 ]; then
